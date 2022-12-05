@@ -59,6 +59,8 @@ public sealed class MacronizerController : Controller
         };
         HttpClient client = GetClient(_serviceUri);
 
+        // TODO filtering
+
         // we need this to remove charset from content-type
         // (charset UTF8 for JSON is redundant and the Flask API checks
         // for exact content type match in header)
@@ -76,6 +78,9 @@ public sealed class MacronizerController : Controller
                 Error = $"{response.StatusCode}: {response.ReasonPhrase}"
             };
         }
+
+        // TODO filtering
+
         return await response.Content.ReadFromJsonAsync<MacronizerResult>
             (jsonOptions) ?? new MacronizerResult(request) { Result = "" };
     }

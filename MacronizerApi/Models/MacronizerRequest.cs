@@ -20,6 +20,12 @@ namespace MacronizerApi.Models
         public bool NormalizeWS { get; set; }
 
         /// <summary>
+        /// True to apply Mn-category Unicode characters precomposition
+        /// before macronization.
+        /// </summary>
+        public bool PrecomposeMN { get; set; }
+
+        /// <summary>
         /// The optional opening escape to use for an ambiguous form instead
         /// of the default <c>&lt;span class="ambig"&gt;</c>. If not specified,
         /// the default is preserved. If empty, the tag is removed.
