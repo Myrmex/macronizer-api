@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using MacronizerApi.Models;
 using System.Text;
 using Macronizer.Filters;
+using Microsoft.Extensions.Logging;
 
 namespace MacronizerApi.Controllers;
 
@@ -20,17 +21,28 @@ namespace MacronizerApi.Controllers;
 [Produces("application/json")]
 public sealed class MacronizerController : Controller
 {
+    private class FlaskResult
+    {
+        public string? Result { get; set; }
+        public string? Error { get; set; }
+    }
+
+    private readonly ILogger<MacronizerController> _logger;
+
     private readonly string _serviceUri;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MacronizerController"/> class.
     /// </summary>
     /// <param name="config">The configuration.</param>
-    public MacronizerController(IConfiguration config)
+    /// <param name="logger">The logger.</param>
+    public MacronizerController(IConfiguration config,
+        ILogger<MacronizerController> logger)
     {
         _serviceUri = config.GetValue<string>("AlatiusMacronizerUri")
             ?? "http://localhost:51234/";
         if (!_serviceUri.EndsWith("/")) _serviceUri += "/";
+        _logger = logger;
     }
 
     private static HttpClient GetClient(string apiRootUri)
@@ -71,6 +83,8 @@ public sealed class MacronizerController : Controller
     public async Task<MacronizerResult> Macronize(
         [FromBody] MacronizerRequest request)
     {
+        _logger.LogInformation("Macronization request: {Request}", request);
+
         JsonSerializerOptions jsonOptions = new()
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
@@ -92,15 +106,39 @@ public sealed class MacronizerController : Controller
 
         if (!response.IsSuccessStatusCode)
         {
+            _logger.LogError("Macronization error: {Code} {Reason}",
+                response.StatusCode, response.ReasonPhrase);
+
             return new MacronizerResult(request)
             {
                 Error = $"{response.StatusCode}: {response.ReasonPhrase}"
             };
         }
 
-        // TODO filtering
+        FlaskResult result = (await response.Content.ReadFromJsonAsync<FlaskResult>
+            (jsonOptions))!;
 
-        return await response.Content.ReadFromJsonAsync<MacronizerResult>
-            (jsonOptions) ?? new MacronizerResult(request) { Result = "" };
+        // apply postprocessing filters if any
+        if (request.HasPostFilters() && !string.IsNullOrEmpty(result.Error))
+        {
+            ITextFilter filter = new RankSpanTextFilter();
+            StringBuilder text = new(result.Result);
+            filter.Apply(text, new RankSpanTextFilterOptions
+            {
+                UnmarkedEscapeOpen = request.UnmarkedEscapeOpen,
+                UnknownEscapeClose = request.UnknownEscapeClose,
+                AmbiguousEscapeOpen = request.AmbiguousEscapeOpen,
+                AmbiguousEscapeClose = request.AmbiguousEscapeClose,
+                UnknownEscapeOpen = request.UnknownEscapeOpen,
+                UnmarkedEscapeClose = request.UnmarkedEscapeClose,
+            });
+            result.Result = text.ToString();
+        }
+
+        return new MacronizerResult(request)
+        {
+            Result = result.Result,
+            Error = result.Error
+        };
     }
 }

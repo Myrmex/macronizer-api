@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text;
 
 namespace MacronizerApi.Models
 {
@@ -16,12 +17,18 @@ namespace MacronizerApi.Models
 
         /// <summary>
         /// True to apply whitespace normalization before macronization.
+        /// This normalizes space/tab characters by replacing them with a single
+        /// space, and trimming the text at both edges. It also normalizes CR+LF
+        /// into LF only.
         /// </summary>
         public bool NormalizeWS { get; set; }
 
         /// <summary>
         /// True to apply Mn-category Unicode characters precomposition
-        /// before macronization.
+        /// before macronization. This precomposes Unicode Mn-category
+        /// characters with their letters wherever possible. Apply this filter
+        /// when the input text has Mn-characters to avoid potential issues with
+        /// macronization and other processes.
         /// </summary>
         public bool PrecomposeMN { get; set; }
 
@@ -81,5 +88,48 @@ namespace MacronizerApi.Models
             AmbiguousEscapeClose != null ||
             UnknownEscapeOpen != null ||
             UnknownEscapeClose != null;
+
+        private static StringBuilder AppendEscapePair(string? op, string? cl,
+            StringBuilder sb)
+        {
+            sb.Append("<[").Append(op ?? "NUL")
+              .Append("] >[")
+              .Append(cl ?? "NUL")
+              .Append(']');
+            return sb;
+        }
+
+        /// <summary>
+        /// Converts to string.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="string" /> that represents this instance.
+        /// </returns>
+        public override string ToString()
+        {
+            StringBuilder sb = new();
+
+            sb.Append("txt: ").Append(Text?.Length ?? 0);
+
+            sb.Append("| opt:").Append(base.ToString());
+
+            if (HasPreFilters())
+            {
+                sb.Append("| pre: ");
+                if (NormalizeWS) sb.Append("Ws");
+                if (PrecomposeMN) sb.Append("Mn");
+            }
+            if (HasPostFilters())
+            {
+                sb.Append("| post: ").Append("Unm=");
+                AppendEscapePair(UnmarkedEscapeOpen, UnmarkedEscapeClose, sb);
+                sb.Append(" Amb=");
+                AppendEscapePair(AmbiguousEscapeOpen, AmbiguousEscapeClose, sb);
+                sb.Append(" Unk=");
+                AppendEscapePair(UnknownEscapeOpen, UnknownEscapeClose, sb);
+            }
+
+            return sb.ToString();
+        }
     }
 }

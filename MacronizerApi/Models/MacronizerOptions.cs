@@ -1,4 +1,6 @@
-﻿namespace MacronizerApi.Models
+﻿using System.Text;
+
+namespace MacronizerApi.Models
 {
     /// <summary>
     /// Options for macronization.
@@ -24,5 +26,21 @@
         /// Mark ambiguous results.
         /// </summary>
         public bool Ambiguous { get; set; }
+
+        /// <summary>
+        /// Converts to string.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="string" /> that represents this instance.
+        /// </returns>
+        public override string ToString()
+        {
+            StringBuilder sb = new();
+            if (Ambiguous) sb.Append('A');
+            if (Itoj) sb.Append('I');
+            if (Maius) sb.Append('M');
+            if (Utov) sb.Append('U');
+            return sb.ToString();
+        }
     }
 }

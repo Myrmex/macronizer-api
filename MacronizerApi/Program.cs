@@ -8,6 +8,8 @@ using System.Diagnostics;
 using Microsoft.Extensions.Hosting;
 using Serilog.Events;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using Serilog.Exceptions;
 
 namespace MacronizerApi;
 
@@ -37,10 +39,7 @@ public static class Program
     /// <param name="args">The arguments.</param>
     public static IHostBuilder CreateHostBuilder(string[] args) =>
         Host.CreateDefaultBuilder(args)
-            .ConfigureWebHostDefaults(webBuilder =>
-            {
-                webBuilder.UseStartup<Startup>();
-            });
+            .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>());
 
     /// <summary>
     /// Main entry point.
@@ -52,6 +51,7 @@ public static class Program
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Debug()
             .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+            .Enrich.WithExceptionDetails()
             .Enrich.FromLogContext()
             .WriteTo.Console()
 #if DEBUG

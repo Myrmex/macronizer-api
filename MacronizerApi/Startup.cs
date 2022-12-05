@@ -12,7 +12,6 @@ using MacronizerApi.Services;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
-using System.Linq;
 using System.IO;
 using System;
 using Microsoft.AspNetCore.Builder;
@@ -138,14 +137,20 @@ public sealed class Startup
         ConfigureSwaggerServices(services);
 
         // serilog
-        // Install-Package Serilog.Exceptions Serilog.Sinks.MongoDB
         // https://github.com/RehanSaeed/Serilog.Exceptions
+        string? intervalName = Configuration.GetSection("Serilog")
+            .GetValue<string>("RollingInterval");
+        RollingInterval interval = string.IsNullOrEmpty(intervalName)
+            ? RollingInterval.Day
+            : Enum.Parse<RollingInterval>(intervalName);
+
         services.AddSingleton<Serilog.ILogger>(_ => new LoggerConfiguration()
             .MinimumLevel.Information()
             .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
             .Enrich.WithExceptionDetails()
+            .Enrich.FromLogContext()
             .WriteTo.Console()
-            .WriteTo.File("log.txt", rollingInterval: RollingInterval.Day)
+            .WriteTo.File("macronizer-log.txt", rollingInterval: interval)
             .CreateLogger());
     }
 
@@ -206,8 +211,10 @@ public sealed class Startup
         app.UseSwaggerUI(options =>
         {
             string? url = Configuration.GetValue<string>("Swagger:Endpoint");
-            if (string.IsNullOrEmpty(url)) url = "v1/swagger.json";
+            if (string.IsNullOrEmpty(url)) url = "v1.0/swagger.json";
             options.SwaggerEndpoint(url, "V1 Docs");
+            options.DocumentTitle = "Macronizer Service API";
+            options.HeadContent = "Welcome to the Macronizer Service API.";
         });
     }
 }
