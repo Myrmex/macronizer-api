@@ -20,6 +20,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.Http;
 using System.Threading.RateLimiting;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace MacronizerApi;
 
@@ -93,11 +98,49 @@ public sealed class Startup
         });
     }
 
-    private void ConfigureRateLimiterService(IServiceCollection services)
+    private async Task SendToRecipients(ILogger<Startup> logger,
+        IMessageBuilderService messageBuilder,
+        IMailerService mailer)
+    {
+        // mailer must be enabled
+        if (!Configuration.GetSection("Mailer").GetValue<bool>("IsEnabled"))
+            return;
+
+        // there must be recipient(s)
+        IConfigurationSection section = Configuration.GetSection("Recipients");
+        if (!section.Exists()) return;
+
+        // build message
+        Message? message = messageBuilder.BuildMessage("test-message",
+            new Dictionary<string, string>()
+            {
+                ["EventTime"] = DateTime.UtcNow.ToString()
+            });
+        if (message == null) return;
+
+        // send it to recipients
+        string[] recipients = section.AsEnumerable()
+            .Where(p => !string.IsNullOrEmpty(p.Value))
+            .Select(p => p.Value!).ToArray();
+
+        foreach (string recipient in recipients)
+        {
+            logger.LogInformation("Sending email message");
+            await mailer.SendEmailAsync(
+                recipient,
+                "Test Recipient",
+                message);
+            logger.LogInformation("Email message sent");
+        }
+    }
+
+    private void ConfigureRateLimiterService(IServiceCollection services,
+        ILogger<Startup> logger, IMessageBuilderService messageBuilder,
+        IMailerService mailer)
     {
         // nope if Disabled
         var limit = Configuration.GetSection("Limit");
-        if (!limit.GetValue<bool>("Disabled")) return;
+        if (!limit.GetValue<bool>("IsDisabled")) return;
 
         // PermitLimit (10)
         int permit = limit.GetValue<int>("PermitLimit");
@@ -140,14 +183,19 @@ public sealed class Startup
                 context.HttpContext.Response.StatusCode = 429;
 
                 // log
-                // TODO
+                logger.LogWarning("Rate limit exceeded");
 
-                // JSON with error
-                if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
+                // send
+                await SendToRecipients(logger, messageBuilder, mailer);
+
+                // ret JSON with error
+                if (context.Lease.TryGetMetadata(MetadataName.RetryAfter,
+                    out var retryAfter))
                 {
                     await context.HttpContext.Response.WriteAsync(
                         "{\"error\": " +
-                        $"\"Too many requests. Please try again after {retryAfter.TotalMinutes} minute(s).\"" +
+                        "\"Too many requests. Please try again after " +
+                        $"{retryAfter.TotalMinutes} minute(s).\"" +
                         "}");
                 }
                 else
@@ -165,9 +213,15 @@ public sealed class Startup
     /// Configures the services.
     /// </summary>
     /// <param name="services">The services.</param>
-    public void ConfigureServices(IServiceCollection services)
+    /// <param name="logger">The logger.</param>
+    /// <param name="messageBuilder">The message builder.</param>
+    /// <param name="mailer">The mailer.</param>
+    public void ConfigureServices(IServiceCollection services,
+        ILogger<Startup> logger,
+        IMessageBuilderService messageBuilder,
+        IMailerService mailer)
     {
-        ConfigureRateLimiterService(services);
+        ConfigureRateLimiterService(services, logger, messageBuilder, mailer);
 
         // rate limiter
 
