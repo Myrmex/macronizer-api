@@ -70,7 +70,7 @@ namespace Macronizer.Filters.Test
         [InlineData("", "")]
         [InlineData(
             "<span>Hello</span> <span class=\"ambig\">my</span> <span>world</span>",
-            "Hello ¿my world")]
+            "<span>Hello</span> ¿my</span> <span>world</span>")]
         public void Apply_OpenReplaced(string text, string expected)
         {
             RankSpanTextFilter filter = new();
@@ -78,7 +78,6 @@ namespace Macronizer.Filters.Test
             filter.Apply(sb, new RankSpanTextFilterOptions
             {
                 AmbiguousEscapeOpen = "¿",
-                AmbiguousEscapeClose = null,
             });
             Assert.Equal(expected, sb.ToString());
         }
@@ -87,14 +86,47 @@ namespace Macronizer.Filters.Test
         [InlineData("", "")]
         [InlineData(
             "<span>Hello</span> <span class=\"ambig\">my</span> <span>world</span>",
-            "Hello my¿ world")]
+            "<span>Hello</span> ¿my <span>world</span>")]
+        public void Apply_OpenReplacedCloseRemoved(string text, string expected)
+        {
+            RankSpanTextFilter filter = new();
+            StringBuilder sb = new(text);
+            filter.Apply(sb, new RankSpanTextFilterOptions
+            {
+                AmbiguousEscapeOpen = "¿",
+                AmbiguousEscapeClose = ""
+            });
+            Assert.Equal(expected, sb.ToString());
+        }
+
+        [Theory]
+        [InlineData("", "")]
+        [InlineData(
+            "<span>Hello</span> <span class=\"ambig\">my</span> <span>world</span>",
+            "<span>Hello</span> <span class=\"ambig\">my¿ <span>world</span>")]
         public void Apply_CloseReplaced(string text, string expected)
         {
             RankSpanTextFilter filter = new();
             StringBuilder sb = new(text);
             filter.Apply(sb, new RankSpanTextFilterOptions
             {
-                AmbiguousEscapeOpen = null,
+                AmbiguousEscapeClose = "¿",
+            });
+            Assert.Equal(expected, sb.ToString());
+        }
+
+        [Theory]
+        [InlineData("", "")]
+        [InlineData(
+            "<span>Hello</span> <span class=\"ambig\">my</span> <span>world</span>",
+            "<span>Hello</span> my¿ <span>world</span>")]
+        public void Apply_OpenRemovedCloseReplaced(string text, string expected)
+        {
+            RankSpanTextFilter filter = new();
+            StringBuilder sb = new(text);
+            filter.Apply(sb, new RankSpanTextFilterOptions
+            {
+                AmbiguousEscapeOpen = "",
                 AmbiguousEscapeClose = "¿",
             });
             Assert.Equal(expected, sb.ToString());
