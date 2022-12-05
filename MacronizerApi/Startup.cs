@@ -18,6 +18,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
+using Microsoft.AspNetCore.Http;
+using System.Threading.RateLimiting;
 
 namespace MacronizerApi;
 
@@ -91,12 +93,84 @@ public sealed class Startup
         });
     }
 
+    private void ConfigureRateLimiterService(IServiceCollection services)
+    {
+        // nope if Disabled
+        var limit = Configuration.GetSection("Limit");
+        if (!limit.GetValue<bool>("Disabled")) return;
+
+        // PermitLimit (10)
+        int permit = limit.GetValue<int>("PermitLimit");
+        if (permit < 1) permit = 10;
+
+        // QueueLimit (0)
+        int queue = limit.GetValue<int>("QueueLimit");
+
+        // Window (00:01:00 = HH:MM:SS)
+        string? windowText = limit.GetValue<string>("Window");
+        TimeSpan window;
+        if (!string.IsNullOrEmpty(windowText))
+        {
+            if (!TimeSpan.TryParse(windowText, out window))
+                window = TimeSpan.FromMinutes(1);
+        }
+        else window = TimeSpan.FromMinutes(1);
+
+        // https://blog.maartenballiauw.be/post/2022/09/26/aspnet-core-rate-limiting-middleware.html
+        // default = 10 requests per minute, per authenticated username,
+        // or hostname if not authenticated.
+        services.AddRateLimiter(options =>
+        {
+            options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>
+            (httpContext =>
+                RateLimitPartition.GetFixedWindowLimiter(
+                    partitionKey: httpContext.User.Identity?.Name
+                        ?? httpContext.Request.Headers.Host.ToString(),
+                    factory: partition => new FixedWindowRateLimiterOptions
+                    {
+                        AutoReplenishment = true,
+                        PermitLimit = permit,
+                        QueueLimit = queue,
+                        Window = window
+                    }));
+
+            options.OnRejected = async (context, token) =>
+            {
+                // 429 too many requests
+                context.HttpContext.Response.StatusCode = 429;
+
+                // log
+                // TODO
+
+                // JSON with error
+                if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
+                {
+                    await context.HttpContext.Response.WriteAsync(
+                        "{\"error\": " +
+                        $"\"Too many requests. Please try again after {retryAfter.TotalMinutes} minute(s).\"" +
+                        "}");
+                }
+                else
+                {
+                    await context.HttpContext.Response.WriteAsync(
+                        "{\"error\": " +
+                        "\"Too many requests. Please try again later.\"" +
+                        "}");
+                }
+            };
+        });
+    }
+
     /// <summary>
     /// Configures the services.
     /// </summary>
     /// <param name="services">The services.</param>
     public void ConfigureServices(IServiceCollection services)
     {
+        ConfigureRateLimiterService(services);
+
+        // rate limiter
+
         // configuration
         ConfigureOptionsServices(services);
 

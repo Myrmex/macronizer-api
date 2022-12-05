@@ -8,7 +8,6 @@ using System.Diagnostics;
 using Microsoft.Extensions.Hosting;
 using Serilog.Events;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
 using Serilog.Exceptions;
 
 namespace MacronizerApi;
