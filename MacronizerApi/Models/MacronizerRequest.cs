@@ -26,6 +26,20 @@ namespace MacronizerApi.Models
         public bool PrecomposeMN { get; set; }
 
         /// <summary>
+        /// The optional opening escape to use for an unmarked form instead
+        /// of the default <c>&lt;span&gt;</c>. If not specified,
+        /// the default is preserved. If empty, the tag is removed.
+        /// </summary>
+        public string? UnmarkedEscapeOpen { get; set; }
+
+        /// <summary>
+        /// The optional closing escape to use for an unmarked form instead
+        /// of the default <c>&lt;/span&gt;</c>. If not specified,
+        /// the default is preserved. If empty, the tag is removed.
+        /// </summary>
+        public string? UnmarkedEscapeClose { get; set; }
+
+        /// <summary>
         /// The optional opening escape to use for an ambiguous form instead
         /// of the default <c>&lt;span class="ambig"&gt;</c>. If not specified,
         /// the default is preserved. If empty, the tag is removed.
