@@ -7,6 +7,8 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading.Tasks;
 using MacronizerApi.Models;
+using System.Text;
+using Macronizer.Filters;
 
 namespace MacronizerApi.Controllers;
 
@@ -43,6 +45,22 @@ public sealed class MacronizerController : Controller
         return client;
     }
 
+    private static void ApplyPreFilters(MacronizerRequest request)
+    {
+        StringBuilder text = new StringBuilder(request.Text);
+        if (request.NormalizeWS)
+        {
+            ITextFilter filter = new WhitespaceTextFilter();
+            filter.Apply(text);
+        }
+        if (request.PrecomposeMN)
+        {
+            ITextFilter filter = new MnComposerTextFilter();
+            filter.Apply(text);
+        }
+        request.Text = text.ToString();
+    }
+
     /// <summary>
     /// Macronize the specified text.
     /// </summary>
@@ -57,10 +75,11 @@ public sealed class MacronizerController : Controller
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         };
+
+        // apply preprocessing filters if any
+        if (request.HasPreFilters()) ApplyPreFilters(request);
+
         HttpClient client = GetClient(_serviceUri);
-
-        // TODO filtering
-
         // we need this to remove charset from content-type
         // (charset UTF8 for JSON is redundant and the Flask API checks
         // for exact content type match in header)

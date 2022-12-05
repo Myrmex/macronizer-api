@@ -66,5 +66,20 @@ namespace MacronizerApi.Models
         /// the default is preserved. If empty, the tag is removed.
         /// </summary>
         public string? UnknownEscapeClose { get; set; }
+
+        /// <summary>
+        /// Determines whether this request has any preprocessing filter.
+        /// </summary>
+        public bool HasPreFilters() => NormalizeWS || PrecomposeMN;
+
+        /// <summary>
+        /// Determines whether this request has any postprocessing filter.
+        /// </summary>
+        public bool HasPostFilters() => UnmarkedEscapeOpen != null ||
+            UnmarkedEscapeClose != null ||
+            AmbiguousEscapeOpen != null ||
+            AmbiguousEscapeClose != null ||
+            UnknownEscapeOpen != null ||
+            UnknownEscapeClose != null;
     }
 }
