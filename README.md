@@ -10,30 +10,31 @@ Apart from endpoints used for diagnostic purposes, the API exposes a single endp
 - `maius` (boolean): true to macronize capitalized words.
 - `utov` (boolean): true to convert U to V.
 - `itoj` (boolean): true to convert I to J.
-- `ambiguous` (boolean): true to mark ambiguous results. In this case, the output will be HTML instead of plain text, with `span` elements wrapping each word, eventually with a `class` attribute equal to `ambig` or `unknown`. You can use the options below to convert it before returning the result.
+- `ambiguous` (boolean): true to mark ambiguous results. In this case, the output will be HTML instead of plain text, with `span` elements wrapping each word, with a `class` attribute equal to `ambig` or `unknown` (or `auto` for unmarked vowels). In turn, each of these spans will wrap the vowels inside an attribute-less span `element`. You can use the options below to convert it before returning the result.
 - `normalizeWS` (boolean): true to normalize whitespace in text before macronization. This normalizes space/tab characters by replacing them with a single space, and trimming the text at both edges. It also normalizes CR+LF into LF only.
 - `precomposeMN` (boolean): true to to apply Mn-category Unicode characters precomposition before macronization. This precomposes Unicode Mn-category characters with their letters wherever possible. Apply this filter when the input text has Mn-characters to avoid potential issues with macronization.
-- `unmarkedEscapeOpen` (string): the optional opening escape to use for an unmarked form instead of the default `<span>`. If not specified, the default is preserved. If empty, the tag is removed.
-- `unmarkedEscapeClose` (string): the optional closing escape to use for an unmarked form instead of the default `</span>`. If not specified, the default is preserved. If empty, the tag is removed.
-- `ambiguousEscapeOpen` (string): the optional opening escape to use for an ambiguous form instead of the default `<span class="ambig">`. If not specified, the default is preserved. If empty, the tag is removed.
-- `ambiguousEscapeOpen` (string): the optional closing escape to use for an ambiguous form instead of the default `</span>`. If not specified, the default is preserved. If empty, the tag is removed.
-- `unknownEscapeOpen` (string): the optional opening escape to use for an unknown form instead of the default `<span class="unknown">`. If not specified, the default is preserved. If empty, the tag is removed.
-- `unknownEscapeClose` (string): the optional closing escape to use for an unknown form instead of the default `</span>`. If not specified, the default is preserved. If empty, the tag is removed.
+- `unmarkedEscapeOpen` (string): the optional opening escape to use for an unmarked-form vowel.
+- `unmarkedEscapeClose` (string): the optional closing escape to use for an unmarked-form vowel.
+- `ambiguousEscapeOpen` (string): the optional opening escape to use for an ambiguous-form vowel.
+- `ambiguousEscapeOpen` (string): the optional closing escape to use for an ambiguous-form vowel.
+- `unknownEscapeOpen` (string): the optional opening escape to use for an unknown-form vowel.
+- `unknownEscapeClose` (string): the optional closing escape to use for an unknown-form vowel.
 
 The result is a JSON object having this model:
 
-```json
-{
-
-}
-```
+- `result` (string): text. When set, there is no `error`.
+- `error` (string): error. When set, there is no `result`.
+- `maius` (boolean): true to macronize capitalized words.
+- `utov` (boolean): true to convert U to V.
+- `itoj` (boolean): true to convert I to J.
+- `ambiguous` (boolean): true to mark ambiguous results.
 
 For instance, from this request body:
 
 ```json
 {
   "ambiguous": true,
-  "text": "tota Gallia divisa est"
+  "text": "Gallia est omnis divisa in partes tres, quarum unam incolunt Belgae, aliam Aquitani, tertiam qui ipsorum lingua Celtae, nostra Galli appellantur."
 }
 ```
 
@@ -41,7 +42,7 @@ you get this response content:
 
 ```json
 {
-  "result": "<span class=\"ambig\">t<span>ō</span>t<span>ā</span></span> <span class=\"ambig\">G<span>a</span>ll<span>i</span><span>ā</span></span> <span class=\"ambig\">d<span>ī</span>v<span>ī</span>s<span>a</span></span> <span class=\"ambig\"><span>e</span>st</span>",
+  "result": "<span class=\"ambig\">G<span>a</span>ll<span>i</span><span>ā</span></span> <span class=\"ambig\"><span>e</span>st</span> <span class=\"ambig\"><span>o</span>mn<span>ī</span>s</span> <span class=\"ambig\">d<span>ī</span>v<span>ī</span>s<span>a</span></span> <span class=\"auto\"><span>i</span>n</span> <span class=\"auto\">p<span>a</span>rt<span>ē</span>s</span> <span class=\"auto\">tr<span>ē</span>s</span>, <span class=\"auto\">q<span>u</span><span>ā</span>r<span>u</span>m</span> <span class=\"auto\"><span>ū</span>n<span>a</span>m</span> <span class=\"auto\"><span>i</span>nc<span>o</span>l<span>u</span>nt</span> <span class=\"auto\">B<span>e</span>lg<span>a</span><span>e</span></span>, <span class=\"auto\"><span>a</span>l<span>i</span><span>a</span>m</span> <span class=\"auto\"><span>A</span>q<span>u</span><span>ī</span>t<span>ā</span>n<span>ī</span></span>, <span class=\"auto\">t<span>e</span>rt<span>i</span><span>a</span>m</span> <span class=\"auto\">q<span>u</span><span>ī</span></span> <span class=\"auto\"><span>i</span>ps<span>ō</span>r<span>u</span>m</span> <span class=\"ambig\">l<span>i</span>ng<span>u</span><span>ā</span></span> <span class=\"auto\">C<span>e</span>lt<span>a</span><span>e</span></span>, <span class=\"ambig\">n<span>o</span>str<span>a</span></span> <span class=\"auto\">G<span>a</span>ll<span>ī</span></span> <span class=\"auto\"><span>a</span>pp<span>e</span>ll<span>a</span>nt<span>u</span>r</span>.",
   "error": null,
   "maius": false,
   "utov": false,
@@ -64,7 +65,18 @@ Using the escape properties allows you to convert HTML output into something els
 }
 ```
 
-will convert a result like `<span>tota<span>`
+In this case, the output will be more compact:
+
+```json
+{
+  "result": "Ga¿lli¿ā¿ e¿st o¿mnī¿s dī¿vī¿sa¿ in partēs trēs, quārum ūnam incolunt Belgae, aliam Aquītānī, tertiam quī ipsōrum li¿ngu¿ā¿ Celtae, no¿stra¿ Gallī appellantur.",
+  "error": null,
+  "maius": false,
+  "utov": false,
+  "itoj": false,
+  "ambiguous": true
+}
+```
 
 ## Settings
 

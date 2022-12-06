@@ -17,47 +17,18 @@ namespace Macronizer.Filters.Test
             };
 
         [Theory]
-        [InlineData("")]
-        [InlineData("Hello world")]
-        [InlineData("<span>Hello</span> <span>world</span>")]
-        [InlineData("<span class=\"ambig\">Hello</span> world")]
-        [InlineData("<span class=\"ambig\">Hello</span> " +
-            "<span class=\"ambig\">world</span>")]
-        [InlineData("<span class=\"unknown\">Hello</span> world")]
-        [InlineData("<span class=\"unknown\">Hello</span> " +
-            "<span class=\"unknown\">world</span>")]
-        [InlineData("<span>Hello</span> " +
-            "<span class=\"ambig\">my</span> " +
-            "<span class=\"unknown\">Gorzorg</span> " +
-            "<span>world</span>")]
-        public void Apply_AllPreserved(string text)
-        {
-            RankSpanTextFilter filter = new();
-            StringBuilder sb = new(text);
-            filter.Apply(sb, new RankSpanTextFilterOptions());
-            Assert.Equal(text, sb.ToString());
-        }
-
-        [Theory]
         [InlineData("", "")]
         [InlineData("Hello world", "Hello world")]
-        [InlineData("<span>Hello</span> <span>world</span>",
-            "[N]Hello[/N] [N]world[/N]")]
-        [InlineData("<span class=\"ambig\">Hello</span> world",
-            "[A]Hello[/A] world")]
-        [InlineData("<span class=\"ambig\">Hello</span> " +
-            "<span class=\"ambig\">world</span>",
-            "[A]Hello[/A] [A]world[/A]")]
-        [InlineData("<span class=\"unknown\">Hello</span> world",
-            "[U]Hello[/U] world")]
-        [InlineData("<span class=\"unknown\">Hello</span> " +
-            "<span class=\"unknown\">world</span>",
-            "[U]Hello[/U] [U]world[/U]")]
-        [InlineData("<span>Hello</span> " +
-            "<span class=\"ambig\">my</span> " +
-            "<span class=\"unknown\">Gorzorg</span> " +
-            "<span>world</span>",
-            "[N]Hello[/N] [A]my[/A] [U]Gorzorg[/U] [N]world[/N]")]
+        [InlineData("<span class=\"ambig\">t<span>ō</span>t<span>ā</span></span> " +
+            "<span class=\"ambig\">G<span>a</span>ll<span>i</span><span>ā</span>" +
+            "</span> <span class=\"ambig\">d<span>ī</span>v<span>ī</span>s" +
+            "<span>a</span></span> <span class=\"ambig\"><span>e</span>st</span> " +
+            "<span class=\"auto\"><span>i</span>n</span> " +
+            "<span class=\"auto\">p<span>a</span>rt<span>ē</span>s</span> " +
+            "<span class=\"auto\">tr<span>ē</span>s</span>.",
+            "t[A]ō[/A]t[A]ā[/A] G[A]a[/A]ll[A]i[/A][A]ā[/A] " +
+            "d[A]ī[/A]v[A]ī[/A]s[A]a[/A] [A]e[/A]st [N]i[/N]n " +
+            "p[N]a[/N]rt[N]ē[/N]s tr[N]ē[/N]s.")]
         public void Apply_AllReplaced(string text, string expected)
         {
             RankSpanTextFilter filter = new();
@@ -68,66 +39,25 @@ namespace Macronizer.Filters.Test
 
         [Theory]
         [InlineData("", "")]
-        [InlineData(
-            "<span>Hello</span> <span class=\"ambig\">my</span> <span>world</span>",
-            "<span>Hello</span> ¿my</span> <span>world</span>")]
-        public void Apply_OpenReplaced(string text, string expected)
+        [InlineData("Hello world", "Hello world")]
+        [InlineData("<span class=\"ambig\">t<span>ō</span>t<span>ā</span></span> " +
+            "<span class=\"ambig\">G<span>a</span>ll<span>i</span><span>ā</span>" +
+            "</span> <span class=\"ambig\">d<span>ī</span>v<span>ī</span>s" +
+            "<span>a</span></span> <span class=\"ambig\"><span>e</span>st</span> " +
+            "<span class=\"auto\"><span>i</span>n</span> " +
+            "<span class=\"auto\">p<span>a</span>rt<span>ē</span>s</span> " +
+            "<span class=\"auto\">tr<span>ē</span>s</span>.",
+            "t[A]ō[/A]t[A]ā[/A] G[A]a[/A]ll[A]i[/A][A]ā[/A] " +
+            "d[A]ī[/A]v[A]ī[/A]s[A]a[/A] [A]e[/A]st in " +
+            "partēs trēs.")]
+        public void Apply_AmbigReplaced(string text, string expected)
         {
             RankSpanTextFilter filter = new();
             StringBuilder sb = new(text);
-            filter.Apply(sb, new RankSpanTextFilterOptions
+            filter.Apply(sb, new RankSpanTextFilterOptions()
             {
-                AmbiguousEscapeOpen = "¿",
-            });
-            Assert.Equal(expected, sb.ToString());
-        }
-
-        [Theory]
-        [InlineData("", "")]
-        [InlineData(
-            "<span>Hello</span> <span class=\"ambig\">my</span> <span>world</span>",
-            "<span>Hello</span> ¿my <span>world</span>")]
-        public void Apply_OpenReplacedCloseRemoved(string text, string expected)
-        {
-            RankSpanTextFilter filter = new();
-            StringBuilder sb = new(text);
-            filter.Apply(sb, new RankSpanTextFilterOptions
-            {
-                AmbiguousEscapeOpen = "¿",
-                AmbiguousEscapeClose = ""
-            });
-            Assert.Equal(expected, sb.ToString());
-        }
-
-        [Theory]
-        [InlineData("", "")]
-        [InlineData(
-            "<span>Hello</span> <span class=\"ambig\">my</span> <span>world</span>",
-            "<span>Hello</span> <span class=\"ambig\">my¿ <span>world</span>")]
-        public void Apply_CloseReplaced(string text, string expected)
-        {
-            RankSpanTextFilter filter = new();
-            StringBuilder sb = new(text);
-            filter.Apply(sb, new RankSpanTextFilterOptions
-            {
-                AmbiguousEscapeClose = "¿",
-            });
-            Assert.Equal(expected, sb.ToString());
-        }
-
-        [Theory]
-        [InlineData("", "")]
-        [InlineData(
-            "<span>Hello</span> <span class=\"ambig\">my</span> <span>world</span>",
-            "<span>Hello</span> my¿ <span>world</span>")]
-        public void Apply_OpenRemovedCloseReplaced(string text, string expected)
-        {
-            RankSpanTextFilter filter = new();
-            StringBuilder sb = new(text);
-            filter.Apply(sb, new RankSpanTextFilterOptions
-            {
-                AmbiguousEscapeOpen = "",
-                AmbiguousEscapeClose = "¿",
+                AmbiguousEscapeOpen = "[A]",
+                AmbiguousEscapeClose = "[/A]"
             });
             Assert.Equal(expected, sb.ToString());
         }

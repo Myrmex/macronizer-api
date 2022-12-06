@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 
 namespace Macronizer.Filters;
 
@@ -12,101 +12,64 @@ namespace Macronizer.Filters;
 /// </summary>
 public sealed partial class RankSpanTextFilter : TextFilter, ITextFilter
 {
-    private static readonly Regex _spanRegex = SpanRegex();
-
-    private static void ProcessClosingSpan(int i, StringBuilder text,
-        string replace)
+    private static void ProcessSpan(XElement span, StringBuilder text,
+        RankSpanTextFilterOptions options)
     {
-        while (i < text.Length - 6)
+        foreach (XNode child in span.Nodes())
         {
-            if (text[i] == '<' && text[i + 1] == '/' && text[i + 2] == 's' &&
-                text[i + 3] == 'p' && text[i + 4] == 'a' && text[i + 5] == 'n' &&
-                text[i + 6] == '>')
+            if (child is XText txt)
             {
-                break;
+                text.Append(txt.Value);
+                continue;
             }
-            i++;
+            if (child is XElement elem)
+            {
+                switch (span.Attribute("class")?.Value)
+                {
+                    case "ambig":
+                        if (!string.IsNullOrEmpty(options.AmbiguousEscapeOpen))
+                            text.Append(options.AmbiguousEscapeOpen);
+                        text.Append(elem.Value);
+                        if (!string.IsNullOrEmpty(options.AmbiguousEscapeClose))
+                            text.Append(options.AmbiguousEscapeClose);
+                        break;
+                    case "unknown":
+                        if (!string.IsNullOrEmpty(options.UnknownEscapeOpen))
+                            text.Append(options.UnknownEscapeOpen);
+                        text.Append(elem.Value);
+                        if (!string.IsNullOrEmpty(options.UnknownEscapeClose))
+                            text.Append(options.UnknownEscapeClose);
+                        break;
+                    default:
+                        if (!string.IsNullOrEmpty(options.UnmarkedEscapeOpen))
+                            text.Append(options.UnmarkedEscapeOpen);
+                        text.Append(elem.Value);
+                        if (!string.IsNullOrEmpty(options.UnmarkedEscapeClose))
+                            text.Append(options.UnmarkedEscapeClose);
+                        break;
+                }
+            }
         }
-        if (i > text.Length - 6) return;    // defensive
-        text.Remove(i, 7);
-        if (text.Length > 0) text.Insert(i, replace);
     }
 
     public void Apply(StringBuilder text, object? context = null)
     {
         if (text is null) throw new ArgumentNullException(nameof(text));
+
         if (context is not RankSpanTextFilterOptions options) return;
 
-        string s = text.ToString();
-        int repLen = 0;
+        XElement root = XElement.Parse($"<x>{text}</x>",
+            LoadOptions.PreserveWhitespace);
 
-        foreach (Match m in _spanRegex.Matches(s).Reverse())
+        text.Clear();
+        foreach (XNode node in root.Nodes())
         {
-            switch (m.Groups["c"].Value)
+            if (node is XText txt)
             {
-                case "ambig":
-                    if (options?.AmbiguousEscapeOpen != null)
-                    {
-                        text.Remove(m.Index, m.Length);
-                        if (options.AmbiguousEscapeOpen.Length > 0)
-                        {
-                            text.Insert(m.Index, options.AmbiguousEscapeOpen);
-                            repLen = options.AmbiguousEscapeOpen.Length;
-                        }
-                        else
-                        {
-                            repLen = 0;
-                        }
-                    }
-                    if (options?.AmbiguousEscapeClose != null)
-                    {
-                        ProcessClosingSpan(m.Index + repLen, text,
-                            options.AmbiguousEscapeClose);
-                    }
-                    break;
-
-                case "unknown":
-                    if (options?.UnknownEscapeOpen != null)
-                    {
-                        text.Remove(m.Index, m.Length);
-                        if (options.UnknownEscapeOpen.Length > 0)
-                        {
-                            text.Insert(m.Index, options.UnknownEscapeOpen);
-                            repLen = options.UnknownEscapeOpen.Length;
-                        }
-                        else
-                        {
-                            repLen = 0;
-                        }
-                    }
-                    if (options?.UnknownEscapeClose != null)
-                    {
-                        ProcessClosingSpan(m.Index + repLen, text,
-                            options.UnknownEscapeClose);
-                    }
-                    break;
-
-                default:
-                    if (options?.UnmarkedEscapeOpen != null)
-                    {
-                        text.Remove(m.Index, m.Length);
-                        if (options.UnmarkedEscapeOpen.Length > 0)
-                        {
-                            text.Insert(m.Index, options.UnmarkedEscapeOpen);
-                            repLen = options.UnmarkedEscapeOpen.Length;
-                        }
-                        else
-                        {
-                            repLen = 0;
-                        }
-                    }
-                    if (options?.UnmarkedEscapeClose != null)
-                    {
-                        ProcessClosingSpan(m.Index + repLen, text,
-                            options.UnmarkedEscapeClose);
-                    }
-                    break;
+                text.Append(txt.Value);
+                continue;
             }
+            if (node is XElement elem) ProcessSpan(elem, text, options);
         }
     }
 
@@ -117,44 +80,32 @@ public sealed partial class RankSpanTextFilter : TextFilter, ITextFilter
 public class RankSpanTextFilterOptions
 {
     /// <summary>
-    /// The optional opening escape to use for an unmarked form instead
-    /// of the default <c>&lt;span&gt;</c>. If not specified,
-    /// the default is preserved. If empty, the tag is removed.
+    /// The optional opening escape to use for an unmarked-form vowel.
     /// </summary>
     public string? UnmarkedEscapeOpen { get; set; }
 
     /// <summary>
-    /// The optional closing escape to use for an unmarked form instead
-    /// of the default <c>&lt;/span&gt;</c>. If not specified,
-    /// the default is preserved. If empty, the tag is removed.
+    /// The optional closing escape to use for an unmarked-form vowel.
     /// </summary>
     public string? UnmarkedEscapeClose { get; set; }
 
     /// <summary>
-    /// The optional opening escape to use for an ambiguous form instead
-    /// of the default <c>&lt;span class="ambig"&gt;</c>. If not specified,
-    /// the default is preserved. If empty, the tag is removed.
+    /// The optional opening escape to use for an ambiguous-form vowel.
     /// </summary>
     public string? AmbiguousEscapeOpen { get; set; }
 
     /// <summary>
-    /// The optional closing escape to use for an ambiguous form instead
-    /// of the default <c>&lt;/span&gt;</c>. If not specified,
-    /// the default is preserved. If empty, the tag is removed.
+    /// The optional closing escape to use for an ambiguous-form vowel.
     /// </summary>
     public string? AmbiguousEscapeClose { get; set; }
 
     /// <summary>
-    /// The optional opening escape to use for an unknown form instead
-    /// of the default <c>&lt;span class="unknown"&gt;</c>. If not specified,
-    /// the default is preserved. If empty, the tag is removed.
+    /// The optional opening escape to use for an unknown-form vowel.
     /// </summary>
     public string? UnknownEscapeOpen { get; set; }
 
     /// <summary>
-    /// The optional closing escape to use for an unknown form instead
-    /// of the default <c>&lt;/span&gt;</c>. If not specified,
-    /// the default is preserved. If empty, the tag is removed.
+    /// The optional closing escape to use for an unknown-form vowel.
     /// </summary>
     public string? UnknownEscapeClose { get; set; }
 }

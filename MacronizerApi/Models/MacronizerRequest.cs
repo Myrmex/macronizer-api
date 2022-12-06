@@ -33,45 +33,39 @@ namespace MacronizerApi.Models
         public bool PrecomposeMN { get; set; }
 
         /// <summary>
-        /// The optional opening escape to use for an unmarked form instead
-        /// of the default <c>&lt;span&gt;</c>. If not specified,
-        /// the default is preserved. If empty, the tag is removed.
+        /// The optional opening escape to use for an unmarked-form vowel.
         /// </summary>
+        [MaxLength(100)]
         public string? UnmarkedEscapeOpen { get; set; }
 
         /// <summary>
-        /// The optional closing escape to use for an unmarked form instead
-        /// of the default <c>&lt;/span&gt;</c>. If not specified,
-        /// the default is preserved. If empty, the tag is removed.
+        /// The optional closing escape to use for an unmarked-form vowel.
         /// </summary>
+        [MaxLength(100)]
         public string? UnmarkedEscapeClose { get; set; }
 
         /// <summary>
-        /// The optional opening escape to use for an ambiguous form instead
-        /// of the default <c>&lt;span class="ambig"&gt;</c>. If not specified,
-        /// the default is preserved. If empty, the tag is removed.
+        /// The optional opening escape to use for an ambiguous-form vowel.
         /// </summary>
+        [MaxLength(100)]
         public string? AmbiguousEscapeOpen { get; set; }
 
         /// <summary>
-        /// The optional closing escape to use for an ambiguous form instead
-        /// of the default <c>&lt;/span&gt;</c>. If not specified,
-        /// the default is preserved. If empty, the tag is removed.
+        /// The optional closing escape to use for an ambiguous-form vowel.
         /// </summary>
+        [MaxLength(100)]
         public string? AmbiguousEscapeClose { get; set; }
 
         /// <summary>
-        /// The optional opening escape to use for an unknown form instead
-        /// of the default <c>&lt;span class="unknown"&gt;</c>. If not specified,
-        /// the default is preserved. If empty, the tag is removed.
+        /// The optional opening escape to use for an unknown-form vowel.
         /// </summary>
+        [MaxLength(100)]
         public string? UnknownEscapeOpen { get; set; }
 
         /// <summary>
-        /// The optional closing escape to use for an unknown form instead
-        /// of the default <c>&lt;/span&gt;</c>. If not specified,
-        /// the default is preserved. If empty, the tag is removed.
+        /// The optional closing escape to use for an unknown-form vowel.
         /// </summary>
+        [MaxLength(100)]
         public string? UnknownEscapeClose { get; set; }
 
         /// <summary>
