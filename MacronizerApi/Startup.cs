@@ -20,11 +20,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.Http;
 using System.Threading.RateLimiting;
-using Microsoft.Extensions.Logging;
-using Serilog.Core;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder.Extensions;
 
 namespace MacronizerApi;
 
@@ -68,7 +67,7 @@ public sealed class Startup
             resolver.GetRequiredService<IOptions<DotNetMailerOptions>>().Value);
     }
 
-    private void ConfigureCorsServices(IServiceCollection services)
+    private static void ConfigureCorsServices(IServiceCollection services)
     {
         services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
         {
@@ -98,9 +97,7 @@ public sealed class Startup
         });
     }
 
-    private async Task SendToRecipients(ILogger<Startup> logger,
-        IMessageBuilderService messageBuilder,
-        IMailerService mailer)
+    private async Task NotifyLimitExceededToRecipients()
     {
         // mailer must be enabled
         if (!Configuration.GetSection("Mailer").GetValue<bool>("IsEnabled"))
@@ -111,6 +108,12 @@ public sealed class Startup
         if (!section.Exists()) return;
 
         // build message
+        MessagingOptions msgOptions = new();
+        Configuration.GetSection("Messaging").Bind(msgOptions);
+        IMessageBuilderService messageBuilder = new FileMessageBuilderService(
+            msgOptions,
+            HostEnvironment);
+
         Message? message = messageBuilder.BuildMessage("test-message",
             new Dictionary<string, string>()
             {
@@ -123,20 +126,22 @@ public sealed class Startup
             .Where(p => !string.IsNullOrEmpty(p.Value))
             .Select(p => p.Value!).ToArray();
 
+        DotNetMailerOptions mailerOptions = new();
+        Configuration.GetSection("Mailer").Bind(msgOptions);
+        IMailerService mailer = new DotNetMailerService(mailerOptions);
+
         foreach (string recipient in recipients)
         {
-            logger.LogInformation("Sending email message");
+            Log.Logger.Information("Sending email message");
             await mailer.SendEmailAsync(
                 recipient,
                 "Test Recipient",
                 message);
-            logger.LogInformation("Email message sent");
+            Log.Logger.Information("Email message sent");
         }
     }
 
-    private void ConfigureRateLimiterService(IServiceCollection services,
-        ILogger<Startup> logger, IMessageBuilderService messageBuilder,
-        IMailerService mailer)
+    private void ConfigureRateLimiterService(IServiceCollection services)
     {
         // nope if Disabled
         var limit = Configuration.GetSection("Limit");
@@ -183,10 +188,10 @@ public sealed class Startup
                 context.HttpContext.Response.StatusCode = 429;
 
                 // log
-                logger.LogWarning("Rate limit exceeded");
+                Log.Logger.Warning("Rate limit exceeded");
 
                 // send
-                await SendToRecipients(logger, messageBuilder, mailer);
+                await NotifyLimitExceededToRecipients();
 
                 // ret JSON with error
                 if (context.Lease.TryGetMetadata(MetadataName.RetryAfter,
@@ -213,17 +218,10 @@ public sealed class Startup
     /// Configures the services.
     /// </summary>
     /// <param name="services">The services.</param>
-    /// <param name="logger">The logger.</param>
-    /// <param name="messageBuilder">The message builder.</param>
-    /// <param name="mailer">The mailer.</param>
-    public void ConfigureServices(IServiceCollection services,
-        ILogger<Startup> logger,
-        IMessageBuilderService messageBuilder,
-        IMailerService mailer)
+    public void ConfigureServices(IServiceCollection services)
     {
-        ConfigureRateLimiterService(services, logger, messageBuilder, mailer);
-
         // rate limiter
+        ConfigureRateLimiterService(services);
 
         // configuration
         ConfigureOptionsServices(services);
@@ -255,8 +253,7 @@ public sealed class Startup
         // you can use another mailer service here. In this case,
         // also change the types in ConfigureOptionsServices.
         services.AddTransient<IMailerService, DotNetMailerService>();
-        services.AddTransient<IMessageBuilderService,
-            FileMessageBuilderService>();
+        services.AddTransient<IMessageBuilderService, FileMessageBuilderService>();
 
         // configuration
         services.AddSingleton(_ => Configuration);
@@ -339,7 +336,7 @@ public sealed class Startup
         app.UseSwaggerUI(options =>
         {
             string? url = Configuration.GetValue<string>("Swagger:Endpoint");
-            if (string.IsNullOrEmpty(url)) url = "v1.0/swagger.json";
+            if (string.IsNullOrEmpty(url)) url = "v1/swagger.json";
             options.SwaggerEndpoint(url, "V1 Docs");
             options.DocumentTitle = "Macronizer Service API";
             options.HeadContent = "Welcome to the Macronizer Service API.";
