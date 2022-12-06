@@ -20,6 +20,8 @@ The API is designed to provide base macronization services for moderate machine 
 
 Should you need exclusive access to the service, it is recommended to run it on your local machine, using the provided [Docker compose script](docker-compose.yml), or just drop the whole layer 1 and directly consume layer 0 by running a container from the macronizer image (unless you need the additional filtering services of layer 1, which anyway are trivial).
 
+Additionally, this solution also provides a minimalist CLI tool application, used to stress-test the API and verify its rate limit functionality.
+
 ⚙️ Quick **Docker** image build: `docker build . -t vedph2020/macronizer-api:0.0.1 -t vedph2020/macronizer-api:latest` (replace with the current version).
 
 ## Usage
@@ -132,3 +134,26 @@ All these settings can be overridden, usually via environment variables in the D
   - `PermitLimit`: the maximum number of requests per time window. Default is 10.
   - `QueueLimit`: the queue limit. Default is 0.
   - `Window`: the time window, usually with format `HH:MM:SS`. Any `TimeSpan`-parsable string can be used. Default is 1 minute, which together with `PermitLimit`=10 means max 10 requests per minute.
+
+## CLI Tool
+
+The CLI tool currently has the only function of stress-testing the API to verify its rate limiting capabilities. You might also concatenate `curl` requests in a single bash line, or do other tricks; but this is easier. Tools like Postman are not able to do multiple parallel requests (as they are Electron, and thus NodeJS-based).
+
+To this end, the tool has a single command, `stress`, with this syntax:
+
+```bash
+./macron stress [-t Text] [-c RequestCount] [-m Timeout] [-p]
+```
+
+where:
+
+- `-t` is the text to macronize (include it in `""`). Omit this to use a default text (the incipit of _bellum Gallicum_).
+- `-c` is the count of requests to be made (default 20).
+- `-m` is the timeout, in minutes, for each request (default 5).
+- `-p` to process the requests in parallel, each with its own client, rather than in sequence, with a single client (default `false`).
+
+Sample:
+
+```bash
+./macron stress -p -c 11
+```

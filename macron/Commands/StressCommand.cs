@@ -38,7 +38,7 @@ internal sealed class StressCommand : ICommand
             "The text to macronize", CommandOptionType.SingleValue);
         CommandOption countOption = app.Option("-c|--count",
             "The count of requests", CommandOptionType.SingleValue);
-        CommandOption timeoutOption = app.Option("-t|--timeout",
+        CommandOption timeoutOption = app.Option("-m|--timeout",
             "The request timeout in minutes", CommandOptionType.SingleValue);
         CommandOption parallelOption = app.Option("-p|--parallel",
             "Parallelize requests", CommandOptionType.NoValue);
