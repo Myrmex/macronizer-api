@@ -106,6 +106,7 @@ All these settings can be overridden, usually via environment variables in the D
 ### Network
 
 - `AlatiusMacronizerUri`: the URI of the macronizer service. Default is `http://localhost:51234/` as this is inside the Docker compose stack network.
+- `MacronizerTimeout`: the timeout for the wrapped macronizer service, in minutes. Default is 3.
 - `RateLimit`:
   - `IsDisabled`: true to disable rate limiting.
   - `PermitLimit`: the maximum number of requests per time window.

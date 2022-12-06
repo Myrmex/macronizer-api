@@ -11,6 +11,7 @@ using System.Text;
 using Macronizer.Filters;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
+using Serilog;
 
 namespace MacronizerApi.Controllers;
 
@@ -22,7 +23,7 @@ namespace MacronizerApi.Controllers;
 [Produces("application/json")]
 public sealed class MacronizerController : Controller
 {
-    private class FlaskResult
+    private sealed class FlaskResult
     {
         public string? Result { get; set; }
         public string? Error { get; set; }
@@ -32,25 +33,24 @@ public sealed class MacronizerController : Controller
         public bool Ambigs { get; set; }
     }
 
-    private readonly ILogger<MacronizerController> _logger;
-
     private readonly string _serviceUri;
+    private readonly int _timeout;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MacronizerController"/> class.
     /// </summary>
     /// <param name="config">The configuration.</param>
-    /// <param name="logger">The logger.</param>
-    public MacronizerController(IConfiguration config,
-        ILogger<MacronizerController> logger)
+    public MacronizerController(IConfiguration config)
     {
         _serviceUri = config.GetValue<string>("AlatiusMacronizerUri")
             ?? "http://localhost:51234/";
         if (!_serviceUri.EndsWith("/")) _serviceUri += "/";
-        _logger = logger;
+
+        int n = config.GetValue<int>("MacronizerTimeout");
+        _timeout = n < 1 ? 3 : n;
     }
 
-    private static HttpClient GetClient(string apiRootUri)
+    private HttpClient GetClient(string apiRootUri)
     {
         HttpClient client = new()
         {
@@ -58,6 +58,7 @@ public sealed class MacronizerController : Controller
         };
         client.DefaultRequestHeaders.Accept.Add(
             new MediaTypeWithQualityHeaderValue("application/json"));
+        client.Timeout = TimeSpan.FromMinutes(_timeout);
 
         return client;
     }
@@ -89,7 +90,7 @@ public sealed class MacronizerController : Controller
     public async Task<MacronizerResult> Macronize(
         [FromBody] MacronizerRequest request)
     {
-        _logger.LogInformation("Macronization request: {Request}", request);
+        Log.Logger.Information("Macronization request: {Request}", request);
 
         JsonSerializerOptions jsonOptions = new()
         {
@@ -100,6 +101,7 @@ public sealed class MacronizerController : Controller
         if (request.HasPreFilters()) ApplyPreFilters(request);
 
         HttpClient client = GetClient(_serviceUri);
+
         // we need this to remove charset from content-type
         // (charset UTF8 for JSON is redundant and the Flask API checks
         // for exact content type match in header)
@@ -117,12 +119,12 @@ public sealed class MacronizerController : Controller
 
         JsonContent content = JsonContent.Create(c, options: jsonOptions);
         content.Headers.ContentType!.CharSet = "";
-        HttpResponseMessage response = await client.PostAsync(
+        using HttpResponseMessage response = await client.PostAsync(
             _serviceUri + "macronize", content);
 
         if (!response.IsSuccessStatusCode)
         {
-            _logger.LogError("Macronization error: {Code} {Reason}",
+            Log.Logger.Error("Macronization error: {Code} {Reason}",
                 response.StatusCode, response.ReasonPhrase);
 
             return new MacronizerResult(request)
@@ -135,6 +137,13 @@ public sealed class MacronizerController : Controller
 
         FlaskResult result = (await response.Content.ReadFromJsonAsync<FlaskResult>
             (jsonOptions))!;
+        if (result.Error != null)
+        {
+            return new MacronizerResult(request)
+            {
+                Error = result.Error
+            };
+        }
 
         // apply postprocessing filters if any
         if (request.HasPostFilters() && string.IsNullOrEmpty(result.Error))

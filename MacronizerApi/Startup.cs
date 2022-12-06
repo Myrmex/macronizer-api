@@ -197,18 +197,17 @@ public sealed class Startup
                 if (context.Lease.TryGetMetadata(MetadataName.RetryAfter,
                     out var retryAfter))
                 {
-                    await context.HttpContext.Response.WriteAsync(
-                        "{\"error\": " +
+                    await context.HttpContext.Response.WriteAsync("{\"error\": " +
                         "\"Too many requests. Please try again after " +
                         $"{retryAfter.TotalMinutes} minute(s).\"" +
-                        "}");
+                        "}", cancellationToken: token);
                 }
                 else
                 {
                     await context.HttpContext.Response.WriteAsync(
                         "{\"error\": " +
                         "\"Too many requests. Please try again later.\"" +
-                        "}");
+                        "}", cancellationToken: token);
                 }
             };
         });
@@ -320,6 +319,12 @@ public sealed class Startup
         else
         {
             Console.WriteLine("HttpsRedirection: no");
+        }
+
+        var limit = Configuration.GetSection("Limit");
+        if (!limit.GetValue<bool>("IsDisabled"))
+        {
+            app.UseRateLimiter();
         }
 
         app.UseRouting();
