@@ -79,6 +79,7 @@ public sealed class MacronizerController : Controller
     /// <param name="request">The request.</param>
     /// <returns>The result.</returns>
     [HttpPost("api/macronize")]
+    [Produces("application/json")]
     [ProducesResponseType(200)]
     public async Task<MacronizerResult> Macronize(
         [FromBody] MacronizerRequest request)

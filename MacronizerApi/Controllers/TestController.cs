@@ -38,7 +38,7 @@ namespace MacronizerApi.Controllers
             _messageBuilderService = messageBuilderService;
             _mailerService = mailerService;
             _config = config;
-            _enabled = config.GetSection("Diagnostics").GetValue<bool>("TestEnabled");
+            _enabled = config.GetSection("Diagnostics").GetValue<bool>("IsTestEnabled");
         }
 
         /// <summary>
