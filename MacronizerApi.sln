@@ -5,12 +5,14 @@ VisualStudioVersion = 17.4.33122.133
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MacronizerApi", "MacronizerApi\MacronizerApi.csproj", "{6CB2A9C7-5126-4F4E-A256-4FCCDE746C7A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Macronizer.Filters", "Macronizer.Filters\Macronizer.Filters.csproj", "{4D0A5B06-35F1-47B7-801D-61769B223716}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Macronizer.Filters", "Macronizer.Filters\Macronizer.Filters.csproj", "{4D0A5B06-35F1-47B7-801D-61769B223716}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Macronizer.Filters.Test", "Macronizer.Filters.Test\Macronizer.Filters.Test.csproj", "{BCC96CAC-7BDF-4BF7-9894-5D4658B3FD96}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Macronizer.Filters.Test", "Macronizer.Filters.Test\Macronizer.Filters.Test.csproj", "{BCC96CAC-7BDF-4BF7-9894-5D4658B3FD96}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6EF4543F-FC5C-444C-85EB-41E4E63BB965}"
 	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+		Dockerfile = Dockerfile
 		README.md = README.md
 	EndProjectSection
 EndProject

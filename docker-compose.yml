@@ -1,0 +1,26 @@
+version: '3.7'
+services:
+  macronizer:
+    image: vedph2020/macronizer:0.0.4-alpha
+    ports:
+      - 51234:105
+    networks:
+        - macronizer-network
+
+  macronizer-api:
+    image: vedph2020/macronizer-api:0.0.1
+    ports:
+        # https://stackoverflow.com/questions/48669548/why-does-aspnet-core-start-on-port-80-from-within-docker
+        - 5012:80
+    depends_on:
+        - macronizer
+    environment:
+        - MESSAGING__APIROOTURL=https://cursus.azurewebsites.net/api/
+        - MESSAGING__APPROOTURL=https://fusisoft.it/apps/cursus/
+        - MESSAGING__SUPPORTEMAIL=support@somewhere.org
+    networks:
+        - macronizer-network
+
+networks:
+  macronizer-network:
+    driver: bridge

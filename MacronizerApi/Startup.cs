@@ -23,6 +23,7 @@ using System.Threading.RateLimiting;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static System.Collections.Specialized.BitVector32;
 
 namespace MacronizerApi;
 
@@ -99,12 +100,12 @@ public sealed class Startup
     private async Task NotifyLimitExceededToRecipients()
     {
         // mailer must be enabled
-        if (!Configuration.GetSection("Mailer").GetValue<bool>("IsEnabled"))
-            return;
-
-        // there must be recipient(s)
-        IConfigurationSection section = Configuration.GetSection("Recipients");
-        if (!section.Exists()) return;
+        IConfigurationSection mailerSection = Configuration.GetSection("Mailer");
+        if (!mailerSection.GetValue<bool>("IsEnabled")) return;
+        // recipients must be set
+        string[] recipients = mailerSection.GetValue<string[]>("Recipients")
+            ?? Array.Empty<string>();
+        if (recipients.Length == 0) return;
 
         // build message
         MessagingOptions msgOptions = new();
@@ -120,11 +121,7 @@ public sealed class Startup
             });
         if (message == null) return;
 
-        // send it to recipients
-        string[] recipients = section.AsEnumerable()
-            .Where(p => !string.IsNullOrEmpty(p.Value))
-            .Select(p => p.Value!).ToArray();
-
+        // send message to all the recipients
         DotNetMailerOptions mailerOptions = new();
         Configuration.GetSection("Mailer").Bind(msgOptions);
         IMailerService mailer = new DotNetMailerService(mailerOptions);
@@ -338,7 +335,8 @@ public sealed class Startup
             if (string.IsNullOrEmpty(url)) url = "v1/swagger.json";
             options.SwaggerEndpoint(url, "V1 Docs");
             options.DocumentTitle = "Macronizer Service API";
-            options.HeadContent = "Welcome to the Macronizer Service API.";
+            options.HeadContent = "<h1 style=\"font-family:sans-serif;" +
+                "text-align:center;\">Macronizer API</h1>";
         });
     }
 }
