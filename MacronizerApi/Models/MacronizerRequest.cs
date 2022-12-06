@@ -28,7 +28,7 @@ namespace MacronizerApi.Models
         /// before macronization. This precomposes Unicode Mn-category
         /// characters with their letters wherever possible. Apply this filter
         /// when the input text has Mn-characters to avoid potential issues with
-        /// macronization and other processes.
+        /// macronization.
         /// </summary>
         public bool PrecomposeMN { get; set; }
 
@@ -111,17 +111,17 @@ namespace MacronizerApi.Models
 
             sb.Append("txt: ").Append(Text?.Length ?? 0);
 
-            sb.Append("| opt:").Append(base.ToString());
+            sb.Append(" | opt:").Append(base.ToString());
 
             if (HasPreFilters())
             {
-                sb.Append("| pre: ");
+                sb.Append(" | pre: ");
                 if (NormalizeWS) sb.Append("Ws");
                 if (PrecomposeMN) sb.Append("Mn");
             }
             if (HasPostFilters())
             {
-                sb.Append("| post: ").Append("Unm=");
+                sb.Append(" | post: ").Append("Unm=");
                 AppendEscapePair(UnmarkedEscapeOpen, UnmarkedEscapeClose, sb);
                 sb.Append(" Amb=");
                 AppendEscapePair(AmbiguousEscapeOpen, AmbiguousEscapeClose, sb);

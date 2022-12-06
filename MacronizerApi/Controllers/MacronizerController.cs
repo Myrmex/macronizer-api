@@ -10,6 +10,7 @@ using MacronizerApi.Models;
 using System.Text;
 using Macronizer.Filters;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 
 namespace MacronizerApi.Controllers;
 
@@ -25,6 +26,10 @@ public sealed class MacronizerController : Controller
     {
         public string? Result { get; set; }
         public string? Error { get; set; }
+        public bool Maius { get; set; }
+        public bool Utov { get; set; }
+        public bool Itoj { get; set; }
+        public bool Ambigs { get; set; }
     }
 
     private readonly ILogger<MacronizerController> _logger;
@@ -100,7 +105,17 @@ public sealed class MacronizerController : Controller
         // for exact content type match in header)
         // https://gunnarpeipman.com/httpclient-remove-charset/
         // https://stackoverflow.com/questions/9254891/what-does-content-type-application-json-charset-utf-8-really-mean
-        JsonContent content = JsonContent.Create(request, options: jsonOptions);
+
+        var c = new
+        {
+            text = request.Text,
+            maius = request.Maius,
+            utov = request.Utov,
+            itoj = request.Itoj,
+            ambigs = request.Ambiguous
+        };
+
+        JsonContent content = JsonContent.Create(c, options: jsonOptions);
         content.Headers.ContentType!.CharSet = "";
         HttpResponseMessage response = await client.PostAsync(
             _serviceUri + "macronize", content);
@@ -116,11 +131,13 @@ public sealed class MacronizerController : Controller
             };
         }
 
+        // string dump = await response.Content.ReadAsStringAsync();
+
         FlaskResult result = (await response.Content.ReadFromJsonAsync<FlaskResult>
             (jsonOptions))!;
 
         // apply postprocessing filters if any
-        if (request.HasPostFilters() && !string.IsNullOrEmpty(result.Error))
+        if (request.HasPostFilters() && string.IsNullOrEmpty(result.Error))
         {
             ITextFilter filter = new RankSpanTextFilter();
             StringBuilder text = new(result.Result);
