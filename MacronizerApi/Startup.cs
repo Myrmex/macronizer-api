@@ -21,9 +21,8 @@ using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.Http;
 using System.Threading.RateLimiting;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using static System.Collections.Specialized.BitVector32;
+using System.Linq;
 
 namespace MacronizerApi;
 
@@ -100,12 +99,23 @@ public sealed class Startup
     private async Task NotifyLimitExceededToRecipients()
     {
         // mailer must be enabled
-        IConfigurationSection mailerSection = Configuration.GetSection("Mailer");
-        if (!mailerSection.GetValue<bool>("IsEnabled")) return;
+        if (!Configuration.GetValue<bool>("Mailer:IsEnabled"))
+        {
+            Log.Information("Mailer not enabled");
+            return;
+        }
+
         // recipients must be set
-        string[] recipients = mailerSection.GetValue<string[]>("Recipients")
-            ?? Array.Empty<string>();
-        if (recipients.Length == 0) return;
+        IConfigurationSection recSection = Configuration.GetSection("Mailer:Recipients");
+        if (!recSection.Exists()) return;
+        string[] recipients = recSection.AsEnumerable()
+            .Where(p => !string.IsNullOrEmpty(p.Value))
+            .Select(p => p.Value!).ToArray();
+        if (recipients.Length == 0)
+        {
+            Log.Information("No recipients for limit notification");
+            return;
+        }
 
         // build message
         MessagingOptions msgOptions = new();
@@ -114,21 +124,25 @@ public sealed class Startup
             msgOptions,
             HostEnvironment);
 
-        Message? message = messageBuilder.BuildMessage("test-message",
+        Message? message = messageBuilder.BuildMessage("rate-limit-exceeded",
             new Dictionary<string, string>()
             {
                 ["EventTime"] = DateTime.UtcNow.ToString()
             });
-        if (message == null) return;
+        if (message == null)
+        {
+            Log.Warning("Unable to build limit notification message");
+            return;
+        }
 
         // send message to all the recipients
         DotNetMailerOptions mailerOptions = new();
-        Configuration.GetSection("Mailer").Bind(msgOptions);
+        Configuration.GetSection("Mailer").Bind(mailerOptions);
         IMailerService mailer = new DotNetMailerService(mailerOptions);
 
         foreach (string recipient in recipients)
         {
-            Log.Logger.Information("Sending email message");
+            Log.Logger.Information("Sending rate email message");
             await mailer.SendEmailAsync(
                 recipient,
                 "Test Recipient",
@@ -321,8 +335,7 @@ public sealed class Startup
             Console.WriteLine("HttpsRedirection: no");
         }
 
-        var limit = Configuration.GetSection("Limit");
-        if (!limit.GetValue<bool>("IsDisabled"))
+        if (!Configuration.GetValue<bool>("Limit:IsDisabled"))
         {
             app.UseRateLimiter();
         }

@@ -9,8 +9,6 @@ using System.Threading.Tasks;
 using MacronizerApi.Models;
 using System.Text;
 using Macronizer.Filters;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Primitives;
 using Serilog;
 
 namespace MacronizerApi.Controllers;
