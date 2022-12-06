@@ -141,7 +141,7 @@ public sealed class Startup
     {
         // nope if Disabled
         var limit = Configuration.GetSection("Limit");
-        if (!limit.GetValue<bool>("IsDisabled")) return;
+        if (limit.GetValue<bool>("IsDisabled")) return;
 
         // PermitLimit (10)
         int permit = limit.GetValue<int>("PermitLimit");
@@ -159,6 +159,10 @@ public sealed class Startup
                 window = TimeSpan.FromMinutes(1);
         }
         else window = TimeSpan.FromMinutes(1);
+
+        Log.Information("Applying rate limiter: " +
+            "limit={PermitLimit}, queue={QueueLimit}, window={Window}",
+            permit, queue, window);
 
         // https://blog.maartenballiauw.be/post/2022/09/26/aspnet-core-rate-limiting-middleware.html
         // default = 10 requests per minute, per authenticated username,
