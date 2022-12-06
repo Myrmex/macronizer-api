@@ -2,6 +2,26 @@
 
 This API wraps the [Alatius macronizer API service](https://github.com/Myrmex/alatius-macronizer-api) into a more robust, open infrastructure to be consumed by web clients.
 
+The diagram below shows the layers in this architecture:
+
+![stack](macronizer-api-stack.png)
+
+1. at the bottom there is the Python macronizer, compiled with some adjustments from [Alatius macronizer](https://github.com/Alatius/latin-macronizer).
+2. on top of it, a thin [Flask API](https://github.com/Myrmex/alatius-macronizer-api) provides macronizer functionality as a service.
+3. on top of the Flask API, the ASP.NET web API provides a more robust infrastructure, and some additional filtering services.
+
+Services 1-2 are packed in a Docker image (`vedph2020/macronizer:0.0.4-alpha` and above), while service 3 is packed in a different image (`vedph2020/macronizer-api:0.0.1` and above).
+
+The API is designed to provide base macronization services for moderate machine consumption, as this is just a wrapper around a Python-based core, whose performance is the weak link in the chain. So, it mainly targets occasional usages, and provides a number of mechanism to protect server resources from abuse:
+
+- text size is limited to max 50,000 characters.
+- the rate of requests per time frame is limited.
+- auditing mechanisms are in place to allow admins fine tune the API parameters for best results.
+
+Should you need exclusive access to the service, it is recommended to run it on your local machine, using the provided [Docker compose script](docker-compose.yml), or just drop the whole layer 1 and directly consume layer 0 by running a container from the macronizer image (unless you need the additional filtering services of layer 1, which anyway are trivial).
+
+⚙️ Quick **Docker** image build: `docker build . -t vedph2020/macronizer-api:0.0.1 -t vedph2020/macronizer-api:latest` (replace with the current version).
+
 ## Usage
 
 Apart from endpoints used for diagnostic purposes, the API exposes a single endpoint for the macronization service, `api/macronize`, for a POST request whose body corresponds to a JSON object having this model (\* marks required properties):
@@ -109,6 +129,6 @@ All these settings can be overridden, usually via environment variables in the D
 - `MacronizerTimeout`: the timeout for the wrapped macronizer service, in minutes. Default is 3.
 - `RateLimit`:
   - `IsDisabled`: true to disable rate limiting.
-  - `PermitLimit`: the maximum number of requests per time window.
-  - `QueueLimit`: the queue limit.
-  - `Window`: the time window, usually with format `HH:MM:SS`. Any `TimeSpan`-parsable string can be used.
+  - `PermitLimit`: the maximum number of requests per time window. Default is 10.
+  - `QueueLimit`: the queue limit. Default is 0.
+  - `Window`: the time window, usually with format `HH:MM:SS`. Any `TimeSpan`-parsable string can be used. Default is 1 minute, which together with `PermitLimit`=10 means max 10 requests per minute.
