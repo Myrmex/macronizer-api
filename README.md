@@ -6,6 +6,7 @@ This API wraps the [Alatius macronizer API service](https://github.com/Myrmex/al
 
 - [Macronizer API](#macronizer-api)
   - [Features](#features)
+  - [Quick Start](#quick-start)
   - [Architecture](#architecture)
   - [Usage](#usage)
   - [Settings](#settings)
@@ -16,11 +17,23 @@ This API wraps the [Alatius macronizer API service](https://github.com/Myrmex/al
 ## Features
 
 - CORS-enabled, JSON-based API endpoint to macronize Latin texts using the Alatius macronizer engine (ASP.NET 7).
-- OpenAPI Swagger-based UI.
+- OpenAPI [Swagger-based UI](https://swagger.io/tools/swagger-ui).
 - auditing features like logging and optional mailing to administrators.
-- rate limiting policy to prevent issues and DoS attacks. This is especially required here because of the low performance due to the Python-based core.
+- rate limiting policy to better prevent issues and DoS attacks. This is especially required here because of the low performance due to the Python-based core.
 - some additional filtering functions for preprocessing input text and postprocessing output text.
 - fully containerized distribution (Docker), making the tool usable both in a local machine for single users, and in a server.
+
+## Quick Start
+
+To play with the API on your machine (Windows / MacOS / Linux), assuming that you have [Docker](https://docs.docker.com/get-docker/) installed, just download the [Docker compose script](docker-compose.yml) in some folder, open a terminal window in that folder, and run the command:
+
+```bash
+docker compose up
+```
+
+>If you still have V1 of Docker compose, use command `docker-compose` (mind the dash!) instead.
+
+Once done, open your browser at `localhost:5012/swagger/index.html` to get to the API [Swagger UI](https://swagger.io/tools/swagger-ui/). You can now call the service at the endpoint `localhost:5012/api/` + method name (see the Swagger UI). For instance, the macronizer endpoint will be found via a POST request at `http://localhost:5012/api/macronize`; see [below](#usage) about its usage.
 
 ## Architecture
 
