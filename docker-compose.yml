@@ -4,6 +4,8 @@ services:
     image: vedph2020/macronizer:0.0.4-alpha
     ports:
       - 51234:105
+    networks:
+        - macronizer-network
 
   macronizer-api:
     image: vedph2020/macronizer-api:0.0.1
@@ -13,6 +15,7 @@ services:
     depends_on:
         - macronizer
     environment:
+        - ALATIUSMACRONIZERURI=http://macronizer:105
         - MESSAGING__APIROOTURL=https://cursus.azurewebsites.net/api/
         - MESSAGING__APPROOTURL=https://fusisoft.it/apps/cursus/
         - MESSAGING__SUPPORTEMAIL=support@somewhere.org
