@@ -63,7 +63,7 @@ public sealed class MacronizerController : Controller
 
     private static void ApplyPreFilters(MacronizerRequest request)
     {
-        StringBuilder text = new StringBuilder(request.Text);
+        StringBuilder text = new(request.Text);
         if (request.NormalizeWS)
         {
             ITextFilter filter = new WhitespaceTextFilter();
@@ -88,7 +88,11 @@ public sealed class MacronizerController : Controller
     public async Task<MacronizerResult> Macronize(
         [FromBody] MacronizerRequest request)
     {
-        Log.Logger.Information("Macronization request: {Request}", request);
+        Log.Logger.Information(
+            "Macronization request: {Request} at {Now} UTC from {IP}",
+            request,
+            DateTime.UtcNow,
+            HttpContext.Connection.RemoteIpAddress);
 
         JsonSerializerOptions jsonOptions = new()
         {

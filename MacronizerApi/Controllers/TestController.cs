@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Serilog;
 
 namespace MacronizerApi.Controllers
 {
@@ -15,7 +16,6 @@ namespace MacronizerApi.Controllers
     [ApiController]
     public sealed class TestController : Controller
     {
-        private readonly ILogger<TestController> _logger;
         private readonly IMessageBuilderService _messageBuilderService;
         private readonly IMailerService _mailerService;
         private readonly IConfiguration _config;
@@ -24,17 +24,15 @@ namespace MacronizerApi.Controllers
         /// <summary>
         /// Initializes a new instance of the <see cref="TestController" /> class.
         /// </summary>
-        /// <param name="logger">The logger.</param>
         /// <param name="messageBuilderService">The message builder service.</param>
         /// <param name="mailerService">The mailer service.</param>
         /// <param name="config">The configuration.</param>
         /// <exception cref="ArgumentNullException">logger</exception>
-        public TestController(ILogger<TestController> logger,
+        public TestController(
             IMessageBuilderService messageBuilderService,
             IMailerService mailerService,
             IConfiguration config)
         {
-            _logger = logger;
             _messageBuilderService = messageBuilderService;
             _mailerService = mailerService;
             _config = config;
@@ -51,7 +49,7 @@ namespace MacronizerApi.Controllers
         {
             if (!_enabled) return;
 
-            _logger.LogInformation("Diagnostic log entry posted at {Now} UTC " +
+            Log.Logger.Information("Diagnostic log entry posted at {Now} UTC " +
                                    "from IP {IP}",
                 DateTime.UtcNow,
                 HttpContext.Connection.RemoteIpAddress);
@@ -68,7 +66,7 @@ namespace MacronizerApi.Controllers
             if (!_enabled) return;
 
             Exception exception = new("Fake exception raised for test purposes");
-            _logger.LogError(exception, "Fake exception");
+            Log.Logger.Error(exception, "Fake exception");
             throw exception;
         }
 
@@ -84,23 +82,22 @@ namespace MacronizerApi.Controllers
             string? to = _config.GetValue<string>("Mailer:TestRecipient");
             if (string.IsNullOrEmpty(to))
             {
-                _logger.LogWarning("No recipient defined for test email");
+                Log.Logger.Warning("No recipient defined for test email");
                 return;
             }
 
-            _logger.LogInformation("Building test email message for {Recipient}",
-                to);
+            Log.Logger.Information("Building test email message for {Recipient}", to);
             Message? message = _messageBuilderService.BuildMessage("test-message",
                 new Dictionary<string, string>());
 
             if (message != null)
             {
-                _logger.LogInformation("Sending test email message");
+                Log.Logger.Information("Sending test email message");
                 await _mailerService.SendEmailAsync(
                     to,
                     "Test Recipient",
                     message);
-                _logger.LogInformation("Test email message sent");
+                Log.Logger.Information("Test email message sent");
             }
         }
     }
