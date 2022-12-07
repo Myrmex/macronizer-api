@@ -2,6 +2,25 @@
 
 This API wraps the [Alatius macronizer API service](https://github.com/Myrmex/alatius-macronizer-api) into a more robust, open infrastructure to be consumed by web clients.
 
+- [Macronizer API](#macronizer-api)
+  - [Features](#features)
+  - [Architecture](#architecture)
+  - [Usage](#usage)
+  - [Settings](#settings)
+    - [Auditing](#auditing)
+    - [Network](#network)
+  - [CLI Tool](#cli-tool)
+
+## Features
+
+- CORS-enabled, JSON-based API endpoint to macronize Latin texts using the Alatius macronizer engine (ASP.NET 7).
+- auditing features like logging and optional mailing to administrators.
+- rate limiting policy to prevent issues and DoS attacks. This is especially required here because of the low performance linked to the Python-based core.
+- additional filtering functions for preprocessing input text and postprocessing output text.
+- fully containerized distribution (Docker), making the tool usable both in a local machine for single users, and in a server.
+
+## Architecture
+
 The diagram below shows the layers in this architecture:
 
 ![stack](macronizer-api-stack.png)
