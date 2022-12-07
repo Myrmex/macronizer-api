@@ -123,13 +123,67 @@ As you can define the opening and closing string for each type of vowel length r
 
 ## Settings
 
-All these settings can be overridden, usually via environment variables in the Docker compose script.
+⚙️ This is a technical section for IT people who need to setup a server for this API.
+
+The default settings are defined in `appsettings.json`. This is packed in the Docker image, but you can override any of its values by just providing an _environment variable_ in the Docker compose script. So, you don't need to change the Docker image, but just setup some environment variables in your host.
+
+As `appsettings.json` is a JSON document, overriding any of its properties means that you must use an expression to point to it. In the ASP.NET convention, used here, you just have to append the name of each property (case insensitive; conventionally, use uppercase for environment variables) starting from the root object. Each name is separated by a double underscore (or by `:` in Windows hosts: see [this post](https://github.com/aspnet/Configuration/issues/469)).
+
+>👉 The double underscore is supported by all platforms, and is automatically converted into a colon. Paths are case insensitive.
+
+For instance, say your configuration document has a `ConnectionStrings` object like this:
+
+```json
+{
+  "ConnectionStrings": {
+    "Default": "User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=sample",
+  }
+}
+```
+
+The path to the `Default` connection property will be `CONNECTIONSTRINGS__DEFAULT`. This is the name of the environment variable to set for overriding the value of this setting.
+
+When using arrays, use the index of each item in it to refer to that item. So, in an array like this:
+
+```json
+"Recipients": [
+  "john.doe@somewhere.com",
+  "mary.jane@elsewhere.org"
+],
+```
+
+the first item of the array will be targeted by `RECIPIENTS__0`; the second item by `RECIPIENTS__1`; and so forth.
+
+To override settings you typically use environment variables in the host.
+
+This API uses the standard ASP.NET Core 3 [default configuration](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-3.1#default-configuration) order, namely:
+
+1. settings from `appsettings.json`;
+2. settings from the environment-specific versions of `appsettings.json` (named like `appsettings.{Environment}.json`);
+3. secret manager (in the `Development` environment); this relies on a user secrets file, a JSON file stored on the local developer's machine, outside of the source directory (and thus of source control);
+4. environment variables;
+5. command-line arguments.
+
+The last override wins. Thus, the command line arguments have the highest precedence, followed by environment variables, etc.
+
+As for [command line](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-3.1#command-line-configuration-provider), these are the main points:
+
+- the argument is a key=value pair. The value (which can be empty) either follows the `=` sign, or a space when the key is prefixed with `--` or `/`.
+- do not mix the two alternative syntaxes (with `=` or prefix).
+
+Samples from the quoted documentation:
+
+```bash
+dotnet run CommandLineKey1=value1 --CommandLineKey2=value2 /CommandLineKey3=value3
+dotnet run --CommandLineKey1 value1 /CommandLineKey2 value2
+dotnet run CommandLineKey1= CommandLineKey2=value2
+```
 
 ### Auditing
 
-- `Diagnostics/IsTestEnabled`: enable or disable the API test functions.
-- `Mailer`:
-  - `IsEnabled`: true to enable mailing.
+- `Diagnostics:IsTestEnabled`: enable or disable the API test functions.
+- `Mailer`: section about the email send feature:
+  - `IsEnabled`: true to enable mailing. If you disable it, of course you do not need to provide any other settings for this section.
   - `SenderEmail`: the address to use as the email sender address.
   - `SenderName`: the name to use as the email sender address.
   - `Host`: the URI of the SMTP server.
@@ -139,12 +193,15 @@ All these settings can be overridden, usually via environment variables in the D
   - `Password`: the SMTP user password.
   - `Recipients`: the recipient(s) of notification email messages. This is an array of strings.
   - `TestRecipient`: the email address to use as the recipient for a test email message.
-- `Messaging`:
+- `Messaging`: section about building messages (in this case to be sent via email):
   - `AppName`: the name of the app written in a text message.
   - `ApiRootUrl`: the root URL of the app eventually written in a text message.
   - `AppRootUrl`: the root URL of the app frontend eventually written in a text message.
   - `SupportEmail`: the email address for contacting support eventually written in a text message.
-- `Serilog/RollingInterval`: the rolling interval for the API log file. Valid values are: `Infinite`, `Year`, `Month`, `Day` (default), `Hour`, `Minute`.
+- `Serilog:RollingInterval`: the rolling interval for the API log file. Valid values are: `Infinite`, `Year`, `Month`, `Day` (default), `Hour`, `Minute`.
+- `Server`: this is rarely used. This section contains the configuration for HTTPS. You might need this if you are configuring HTTPS at the level of the Docker containers. If instead you are using a reverse proxy to handle HTTPS, and dealing with HTTP-only containerized services (which is the most common and simplest usage scenario), this is not necessary.
+  - `UseHSTS`: default is `false`.
+  - `UseHttpsRedirection`: default is `false`.
 
 ### Network
 
@@ -178,3 +235,5 @@ Sample:
 ```bash
 ./macron stress -p -c 11
 ```
+
+Should you need to change the URL used by this tool, just edit it in the `appsettings.json` file distributed with it.
