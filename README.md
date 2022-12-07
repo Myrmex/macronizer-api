@@ -15,8 +15,8 @@ This API wraps the [Alatius macronizer API service](https://github.com/Myrmex/al
 
 - CORS-enabled, JSON-based API endpoint to macronize Latin texts using the Alatius macronizer engine (ASP.NET 7).
 - auditing features like logging and optional mailing to administrators.
-- rate limiting policy to prevent issues and DoS attacks. This is especially required here because of the low performance linked to the Python-based core.
-- additional filtering functions for preprocessing input text and postprocessing output text.
+- rate limiting policy to prevent issues and DoS attacks. This is especially required here because of the low performance due to the Python-based core.
+- some additional filtering functions for preprocessing input text and postprocessing output text.
 - fully containerized distribution (Docker), making the tool usable both in a local machine for single users, and in a server.
 
 ## Architecture
@@ -70,7 +70,7 @@ The result is a JSON object having this model:
 - `itoj` (boolean): true to convert I to J.
 - `ambiguous` (boolean): true to mark ambiguous results.
 
-For instance, from this request body:
+For instance, from this request _body_:
 
 ```json
 {
@@ -79,7 +79,7 @@ For instance, from this request body:
 }
 ```
 
-you get this response content:
+you get this response _content_:
 
 ```json
 {
@@ -92,7 +92,7 @@ you get this response content:
 }
 ```
 
-Using the escape properties allows you to convert HTML output into something else, e.g. a compact plain text with some conventional characters reserved to annotate ambiguous or unknown words. For instance, setting these properties will append `¿` to ambiguous words, and `¡` to unknown words, stripping any HTML markup out:
+Using the "escape" properties allows you to convert HTML output into something else, e.g. a compact plain text with some conventional characters reserved to annotate ambiguous or unknown words. For instance, setting these properties will append `¿` to ambiguous word vowels, and `¡` to unknown word vowels, stripping any HTML markup out:
 
 ```json
 {
@@ -118,6 +118,8 @@ In this case, the output will be more compact:
   "ambiguous": true
 }
 ```
+
+As you can define the opening and closing string for each type of vowel length rank, you can customize the output as you fit, should you want to avoid the default HTML based on nested `span`'s.
 
 ## Settings
 
