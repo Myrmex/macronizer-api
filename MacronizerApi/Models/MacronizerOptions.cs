@@ -40,7 +40,7 @@ namespace MacronizerApi.Models
             if (Itoj) sb.Append('I');
             if (Maius) sb.Append('M');
             if (Utov) sb.Append('U');
-            return sb.ToString();
+            return sb.Length > 0? sb.ToString() : "-";
         }
     }
 }
