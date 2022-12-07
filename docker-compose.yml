@@ -4,8 +4,6 @@ services:
     image: vedph2020/macronizer:0.0.4-alpha
     ports:
       - 51234:105
-    networks:
-        - macronizer-network
 
   macronizer-api:
     image: vedph2020/macronizer-api:0.0.1
