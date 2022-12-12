@@ -75,7 +75,7 @@ public sealed class MnComposer
     private static Stream GetResourceStream(string name)
     {
         return Assembly.GetExecutingAssembly()
-            .GetManifestResourceStream($"Chiron.Core.Assets.{name}")!;
+            .GetManifestResourceStream($"Macronizer.Filters.Assets.{name}")!;
     }
 
     /// <summary>
