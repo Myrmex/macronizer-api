@@ -33,6 +33,18 @@ namespace MacronizerApi.Models
         public bool PrecomposeMN { get; set; }
 
         /// <summary>
+        /// A value indicating whether to drop escapes referred to vowels not
+        /// having a macron. When macronizer returns a marked word, all
+        /// the vowels in it are wrapped in a span, which can be rendered here
+        /// according to the values set for the escape properties of these options.
+        /// So, a word like <c>Gallia</c> might come out marked as ambiguous,
+        /// and having vowels <c>a</c>, <c>i</c>, and <c>ā</c> marked inside it;
+        /// yet, while the marks have the purpose of locating vowels, it's only
+        /// the <c>ā</c> with the macron which should be intended as ambiguous.
+        /// </summary>
+        public bool DropNonMacronEscapes { get; set; }
+
+        /// <summary>
         /// The optional opening escape to use for an unmarked-form vowel.
         /// </summary>
         [MaxLength(100)]
@@ -83,14 +95,13 @@ namespace MacronizerApi.Models
             UnknownEscapeOpen != null ||
             UnknownEscapeClose != null;
 
-        private static StringBuilder AppendEscapePair(string? op, string? cl,
+        private static void AppendEscapePair(string? op, string? cl,
             StringBuilder sb)
         {
             sb.Append("<[").Append(op ?? "NUL")
               .Append("] >[")
               .Append(cl ?? "NUL")
               .Append(']');
-            return sb;
         }
 
         /// <summary>

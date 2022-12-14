@@ -8,7 +8,7 @@ services:
         - macronizer-network
 
   macronizer-api:
-    image: vedph2020/macronizer-api:0.0.1
+    image: vedph2020/macronizer-api:0.0.2
     ports:
         # https://stackoverflow.com/questions/48669548/why-does-aspnet-core-start-on-port-80-from-within-docker
         - 5012:80

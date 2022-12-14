@@ -14,6 +14,8 @@ This API wraps the [Alatius macronizer API service](https://github.com/Myrmex/al
     - [Network](#network)
   - [CLI Tool](#cli-tool)
 
+📆 [Changelog](CHANGELOG.md)
+
 ## Features
 
 - CORS-enabled, JSON-based API endpoint to macronize Latin texts using the Alatius macronizer engine (ASP.NET 7).
@@ -57,7 +59,7 @@ Should you need exclusive access to the service, it is recommended to run it on 
 
 Additionally, this solution also provides a minimalist CLI tool application, used to stress-test the API and verify its rate limit functionality.
 
-⚙️ Quick **Docker** image build: `docker build . -t vedph2020/macronizer-api:0.0.1 -t vedph2020/macronizer-api:latest` (replace with the current version).
+⚙️ Quick **Docker** image build: `docker build . -t vedph2020/macronizer-api:0.0.2 -t vedph2020/macronizer-api:latest` (replace with the current version).
 
 ## Usage
 
@@ -70,6 +72,7 @@ Apart from endpoints used for diagnostic purposes, the API exposes a single endp
 - `ambiguous` (boolean): true to mark ambiguous results. In this case, the output will be HTML instead of plain text, with `span` elements wrapping each word, with a `class` attribute equal to `ambig` or `unknown` (or `auto` for unmarked vowels). In turn, each of these spans will wrap the vowels inside an attribute-less span `element`. You can use the options below to convert it before returning the result.
 - `normalizeWS` (boolean): true to normalize whitespace in text before macronization. This normalizes space/tab characters by replacing them with a single space, and trimming the text at both edges. It also normalizes CR+LF into LF only.
 - `precomposeMN` (boolean): true to to apply Mn-category Unicode characters precomposition before macronization. This precomposes Unicode Mn-category characters with their letters wherever possible. Apply this filter when the input text has Mn-characters to avoid potential issues with macronization.
+- `dropNonMacronEscapes`: whether to drop escapes referred to vowels not having a macron. When macronizer returns a marked word, all the vowels in it are wrapped in a span, which can be rendered here according to the values set for the escape properties of these options. So, a word like `Gallia` might come out marked as ambiguous, having vowels `a`, `i`, and `ā` marked inside it; yet, while the marks have the purpose of locating vowels, it's only the `ā` with the macron which should be intended as ambiguous. When this option is true, the escapes specified by the other escape properties will be applied only to vowels having a macron.
 - `unmarkedEscapeOpen` (string): the optional opening escape to use for an unmarked-form vowel.
 - `unmarkedEscapeClose` (string): the optional closing escape to use for an unmarked-form vowel.
 - `ambiguousEscapeOpen` (string): the optional opening escape to use for an ambiguous-form vowel.
@@ -113,6 +116,7 @@ Using the "escape" properties allows you to convert HTML output into something e
 ```json
 {
     "ambiguous": true,
+    "text": "Gallia est omnis divisa in partes tres, quarum unam incolunt Belgae, aliam Aquitani, tertiam qui ipsorum lingua Celtae, nostra Galli appellantur."
     "unmarkedEscapeOpen": "",
     "unmarkedEscapeClose": "",
     "ambiguousEscapeOpen": "",
@@ -135,7 +139,34 @@ In this case, the output will be more compact:
 }
 ```
 
-As you can define the opening and closing string for each type of vowel length rank, you can customize the output as you fit, should you want to avoid the default HTML based on nested `span`'s.
+As you can define the opening and closing string for each type of vowel length rank, you can customize the output as you fit, should you want to avoid the default HTML based on nested `span`'s. Also, the output can get even more compact if you drop redundant escapes as explained above for option `dropNonMacronEscapes`:
+
+```json
+{
+    "ambiguous": true,
+    "dropNonMacronEscapes": true,
+    "text": "Gallia est omnis divisa in partes tres, quarum unam incolunt Belgae, aliam Aquitani, tertiam qui ipsorum lingua Celtae, nostra Galli appellantur.",
+    "unmarkedEscapeOpen": "",
+    "unmarkedEscapeClose": "",
+    "ambiguousEscapeOpen": "",
+    "ambiguousEscapeClose": "¿",
+    "unknownEscapeOpen": "",
+    "unknownEscapeClose": "¡"
+}
+```
+
+The output is now:
+
+```json
+{
+  "result": "Ga¿lli¿ā¿ e¿st o¿mnī¿s dī¿vī¿sa¿ in partēs trēs, quārum ūnam incolunt Belgae, aliam Aquītānī, tertiam quī ipsōrum li¿ngu¿ā¿ Celtae, no¿stra¿ Gallī appellantur.",
+  "error": null,
+  "maius": false,
+  "utov": false,
+  "itoj": false,
+  "ambiguous": true
+}
+```
 
 ## Settings
 

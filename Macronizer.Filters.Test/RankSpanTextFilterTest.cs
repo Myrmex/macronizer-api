@@ -61,5 +61,31 @@ namespace Macronizer.Filters.Test
             });
             Assert.Equal(expected, sb.ToString());
         }
+
+        [Theory]
+        [InlineData("", "")]
+        [InlineData("Hello world", "Hello world")]
+        [InlineData("<span class=\"ambig\">t<span>ō</span>t<span>ā</span></span> " +
+            "<span class=\"ambig\">G<span>a</span>ll<span>i</span><span>ā</span>" +
+            "</span> <span class=\"ambig\">d<span>ī</span>v<span>ī</span>s" +
+            "<span>a</span></span> <span class=\"ambig\"><span>e</span>st</span> " +
+            "<span class=\"auto\"><span>i</span>n</span> " +
+            "<span class=\"auto\">p<span>a</span>rt<span>ē</span>s</span> " +
+            "<span class=\"auto\">tr<span>ē</span>s</span>.",
+            "t[A]ō[/A]t[A]ā[/A] Galli[A]ā[/A] " +
+            "d[A]ī[/A]v[A]ī[/A]sa est in " +
+            "partēs trēs.")]
+        public void Apply_AmbigReplacedWithDrop(string text, string expected)
+        {
+            RankSpanTextFilter filter = new();
+            StringBuilder sb = new(text);
+            filter.Apply(sb, new RankSpanTextFilterOptions()
+            {
+                AmbiguousEscapeOpen = "[A]",
+                AmbiguousEscapeClose = "[/A]",
+                DropNonMacronEscapes = true
+            });
+            Assert.Equal(expected, sb.ToString());
+        }
     }
 }

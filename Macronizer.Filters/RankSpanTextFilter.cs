@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
 namespace Macronizer.Filters;
@@ -10,8 +9,10 @@ namespace Macronizer.Filters;
 /// (ambiguous or unknown or just without attributes) by replacing them
 /// as specified by options.
 /// </summary>
-public sealed partial class RankSpanTextFilter : TextFilter, ITextFilter
+public sealed class RankSpanTextFilter : TextFilter, ITextFilter
 {
+    public const string LONGS = "āēīōūĀĒĪŌŪ";
+
     private static void ProcessSpan(XElement span, StringBuilder text,
         RankSpanTextFilterOptions options)
     {
@@ -24,6 +25,14 @@ public sealed partial class RankSpanTextFilter : TextFilter, ITextFilter
             }
             if (child is XElement elem)
             {
+                if (options.DropNonMacronEscapes &&
+                    elem.Value.Length == 1 &&
+                    !LONGS.Contains(elem.Value[0]))
+                {
+                    text.Append(elem.Value);
+                    continue;
+                }
+
                 switch (span.Attribute("class")?.Value)
                 {
                     case "ambig":
@@ -72,13 +81,22 @@ public sealed partial class RankSpanTextFilter : TextFilter, ITextFilter
             if (node is XElement elem) ProcessSpan(elem, text, options);
         }
     }
-
-    [GeneratedRegex("<span(?:\\s+class=\"(?<c>[^\"]+)\")?>", RegexOptions.Compiled)]
-    private static partial Regex SpanRegex();
 }
 
 public class RankSpanTextFilterOptions
 {
+    /// <summary>
+    /// A value indicating whether to drop escapes referred to vowels not
+    /// having a macron. When macronizer returns a marked word, all
+    /// the vowels in it are wrapped in a span, which can be rendered here
+    /// according to the values set for the escape properties of these options.
+    /// So, a word like <c>Gallia</c> might come out marked as ambiguous,
+    /// and having vowels <c>a</c>, <c>i</c>, and <c>ā</c> marked inside it;
+    /// yet, while the marks have the purpose of locating vowels, it's only
+    /// the <c>ā</c> with the macron which should be intended as ambiguous.
+    /// </summary>
+    public bool DropNonMacronEscapes { get; set; }
+
     /// <summary>
     /// The optional opening escape to use for an unmarked-form vowel.
     /// </summary>

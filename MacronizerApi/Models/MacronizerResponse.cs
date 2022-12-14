@@ -4,7 +4,7 @@
     /// Macronizer result.
     /// </summary>
     /// <seealso cref="MacronizerOptions" />
-    public class MacronizerResult : MacronizerOptions
+    public class MacronizerResponse : MacronizerOptions
     {
         /// <summary>
         /// The macronized text.
@@ -17,11 +17,11 @@
         public string? Error { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MacronizerResult"/>
+        /// Initializes a new instance of the <see cref="MacronizerResponse"/>
         /// class.
         /// </summary>
         /// <param name="options">The options.</param>
-        public MacronizerResult(MacronizerOptions options)
+        public MacronizerResponse(MacronizerOptions options)
         {
             Maius = options.Maius;
             Utov = options.Utov;

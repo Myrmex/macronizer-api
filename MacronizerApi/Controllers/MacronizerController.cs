@@ -85,7 +85,7 @@ public sealed class MacronizerController : Controller
     [HttpPost("api/macronize")]
     [Produces("application/json")]
     [ProducesResponseType(200)]
-    public async Task<MacronizerResult> Macronize(
+    public async Task<MacronizerResponse> Macronize(
         [FromBody] MacronizerRequest request)
     {
         Log.Logger.Information(
@@ -129,7 +129,7 @@ public sealed class MacronizerController : Controller
             Log.Logger.Error("Macronization error: {Code} {Reason}",
                 response.StatusCode, response.ReasonPhrase);
 
-            return new MacronizerResult(request)
+            return new MacronizerResponse(request)
             {
                 Error = $"{response.StatusCode}: {response.ReasonPhrase}"
             };
@@ -141,7 +141,7 @@ public sealed class MacronizerController : Controller
             (jsonOptions))!;
         if (result.Error != null)
         {
-            return new MacronizerResult(request)
+            return new MacronizerResponse(request)
             {
                 Error = result.Error
             };
@@ -154,6 +154,7 @@ public sealed class MacronizerController : Controller
             StringBuilder text = new(result.Result);
             filter.Apply(text, new RankSpanTextFilterOptions
             {
+                DropNonMacronEscapes = request.DropNonMacronEscapes,
                 UnmarkedEscapeOpen = request.UnmarkedEscapeOpen,
                 UnknownEscapeClose = request.UnknownEscapeClose,
                 AmbiguousEscapeOpen = request.AmbiguousEscapeOpen,
@@ -164,7 +165,7 @@ public sealed class MacronizerController : Controller
             result.Result = text.ToString();
         }
 
-        return new MacronizerResult(request)
+        return new MacronizerResponse(request)
         {
             Result = result.Result,
             Error = result.Error

@@ -11,13 +11,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Macronizer.Filters.Test", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6EF4543F-FC5C-444C-85EB-41E4E63BB965}"
 	ProjectSection(SolutionItems) = preProject
+		CHANGELOG.md = CHANGELOG.md
 		docker-compose.yml = docker-compose.yml
 		Dockerfile = Dockerfile
 		macronizer-api-stack.png = macronizer-api-stack.png
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "macron", "macron\macron.csproj", "{A5967B61-1E21-4F66-80E8-8B51076274F1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "macron", "macron\macron.csproj", "{A5967B61-1E21-4F66-80E8-8B51076274F1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
