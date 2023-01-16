@@ -116,7 +116,7 @@ Using the "escape" properties allows you to convert HTML output into something e
 ```json
 {
     "ambiguous": true,
-    "text": "Gallia est omnis divisa in partes tres, quarum unam incolunt Belgae, aliam Aquitani, tertiam qui ipsorum lingua Celtae, nostra Galli appellantur."
+    "text": "Gallia est omnis divisa in partes tres, quarum unam incolunt Belgae, aliam Aquitani, tertiam qui ipsorum lingua Celtae, nostra Galli appellantur.",
     "unmarkedEscapeOpen": "",
     "unmarkedEscapeClose": "",
     "ambiguousEscapeOpen": "",
@@ -167,6 +167,25 @@ The output is now:
   "ambiguous": true
 }
 ```
+
+As a recap, this is a POST request example:
+
+```txt
+POST https://macronizer-api.fusi-soft.com/api/macronize
+
+{
+"ambiguous": true,
+"text": "Gallia est omnis divisa in partes tres, quarum unam incolunt Belgae, aliam Aquitani, tertiam qui ipsorum lingua Celtae, nostra Galli appellantur.",
+"unmarkedEscapeOpen": "",
+"unmarkedEscapeClose": "",
+"ambiguousEscapeOpen": "",
+"ambiguousEscapeClose": "¿",
+"unknownEscapeOpen": "",
+"unknownEscapeClose": "¡"    
+}
+```
+
+>Please notice that the URI sampled here exists for demonstrative purposes only, and is not production-oriented. as it relies on a low-end VM on shared hardware resources.
 
 ## Settings
 
@@ -259,6 +278,42 @@ dotnet run CommandLineKey1= CommandLineKey2=value2
   - `PermitLimit`: the maximum number of requests per time window. Default is 10.
   - `QueueLimit`: the queue limit. Default is 0.
   - `Window`: the time window, usually with format `HH:MM:SS`. Any `TimeSpan`-parsable string can be used. Default is 1 minute, which together with `PermitLimit`=10 means max 10 requests per minute.
+
+💡 Remember that even when using an external network in your Docker compose stack, you can still refer to containers by their assigned name (specified with `container_name`). So, if for some reason you are using an external network, e.g. for a NGINX proxy, you can still refer to the container (here `http://macronizer:105`) like in this example:
+
+```yml
+version: '3.7'
+services:
+  macronizer:
+    image: vedph2020/macronizer:0.0.4-alpha
+    container_name: macronizer
+    restart: unless-stopped
+    ports:
+      - 51234:105
+
+  macronizer-api:
+    image: vedph2020/macronizer-api:0.0.2
+    container_name: macronizer-api
+    restart: unless-stopped
+    ports:
+      # https://stackoverflow.com/questions/48669548/why-does-aspnet-core-start-on-port-80-from-within-docker
+      - 5012:80
+    depends_on:
+      - macronizer
+    environment:
+      - ALATIUSMACRONIZERURI=http://macronizer:105
+      - MESSAGING__APIROOTURL=https://YOURDOMAIN/api/
+      - MESSAGING__APPROOTURL=https://YOURDOMAIN/swagger/index.html
+      - MESSAGING__SUPPORTEMAIL=support@somewhere.org
+      - VIRTUAL_HOST=YOURDOMAIN
+      - LETSENCRYPT_HOST=YOURDOMAIN
+      - LETSENCRYPT_EMAIL=YOUREMAIL
+
+networks:
+  default:
+    external: true
+    name: nginx-proxy
+```
 
 ## CLI Tool
 
