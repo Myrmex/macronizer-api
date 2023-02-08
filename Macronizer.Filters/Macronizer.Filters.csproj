@@ -28,7 +28,7 @@
 
   <ItemGroup>
     <PackageReference Include="Fusi.Text" Version="3.0.0" />
-    <PackageReference Include="Proteus.Core" Version="3.0.0" />
+    <PackageReference Include="Proteus.Core" Version="4.0.0" />
   </ItemGroup>
 
 </Project>

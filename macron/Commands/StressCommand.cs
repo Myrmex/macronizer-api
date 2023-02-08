@@ -116,7 +116,7 @@ internal sealed class StressCommand : ICommand
         }
     }
 
-    public async Task Run()
+    public async Task<int> Run()
     {
         ColorConsole.WriteWrappedHeader("Stress",
             headerColor: ConsoleColor.Green);
@@ -134,6 +134,7 @@ internal sealed class StressCommand : ICommand
         }
 
         ColorConsole.WriteInfo("All done.");
+        return 0;
     }
 }
 
