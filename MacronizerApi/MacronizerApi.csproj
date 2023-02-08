@@ -6,9 +6,9 @@
     <ImplicitUsings>disable</ImplicitUsings>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
 	<NeutralLanguage>en-US</NeutralLanguage>
-	<Version>0.0.1</Version>
-	<FileVersion>0.0.1</FileVersion>
-	<AssemblyVersion>0.0.1</AssemblyVersion>
+	<Version>0.0.3</Version>
+	<FileVersion>0.0.3</FileVersion>
+	<AssemblyVersion>0.0.3</AssemblyVersion>
 	<Authors>Daniele Fusi</Authors>
 	<Company>Fusi</Company>
 	<Product>Cursor</Product>

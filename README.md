@@ -47,7 +47,7 @@ The diagram below shows the layers in this architecture:
 2. on top of it, a thin [Flask API](https://github.com/Myrmex/alatius-macronizer-api) provides macronizer functionality as a service.
 3. on top of the Flask API, the ASP.NET web API provides a more robust infrastructure, and some additional filtering services.
 
-Services 1-2 are packed in a Docker image (`vedph2020/macronizer:0.0.4-alpha` and above), while service 3 is packed in a different image (`vedph2020/macronizer-api:0.0.1` and above).
+Services 1-2 are packed in a Docker image (`vedph2020/macronizer:0.1.3` and above), while service 3 is packed in a different image (`vedph2020/macronizer-api:0.0.3` and above).
 
 The API is designed to provide base macronization services for moderate machine consumption, as this is just a wrapper around a Python-based core, whose performance is the weak link in the chain. So, it mainly targets occasional usages, and provides a number of mechanism to protect server resources from abuse:
 
@@ -59,14 +59,14 @@ Should you need exclusive access to the service, it is recommended to run it on 
 
 Additionally, this solution also provides a minimalist CLI tool application, used to stress-test the API and verify its rate limit functionality.
 
-⚙️ Quick **Docker** image build: `docker build . -t vedph2020/macronizer-api:0.0.2 -t vedph2020/macronizer-api:latest` (replace with the current version).
+⚙️ Quick **Docker** image build: `docker build . -t vedph2020/macronizer-api:0.0.3 -t vedph2020/macronizer-api:latest` (replace with the current version).
 
 ## Usage
 
 Apart from endpoints used for diagnostic purposes, the API exposes a single endpoint for the macronization service, `api/macronize`, for a POST request whose body corresponds to a JSON object having this model (\* marks required properties):
 
 - `text` (string)\*: the text to macronize. Max 50,000 characters.
-- `maius` (boolean): true to macronize capitalized words.
+- `maius` (boolean): true to add macrons to words like _maius_ (=/majjus/).
 - `utov` (boolean): true to convert U to V.
 - `itoj` (boolean): true to convert I to J.
 - `ambiguous` (boolean): true to mark ambiguous results. In this case, the output will be HTML instead of plain text, with `span` elements wrapping each word, with a `class` attribute equal to `ambig` or `unknown` (or `auto` for unmarked vowels). In turn, each of these spans will wrap the vowels inside an attribute-less span `element`. You can use the options below to convert it before returning the result.
@@ -285,14 +285,14 @@ dotnet run CommandLineKey1= CommandLineKey2=value2
 version: '3.7'
 services:
   macronizer:
-    image: vedph2020/macronizer:0.0.4-alpha
+    image: vedph2020/macronizer:0.1.3
     container_name: macronizer
     restart: unless-stopped
     ports:
       - 51234:105
 
   macronizer-api:
-    image: vedph2020/macronizer-api:0.0.2
+    image: vedph2020/macronizer-api:0.0.3
     container_name: macronizer-api
     restart: unless-stopped
     ports:
