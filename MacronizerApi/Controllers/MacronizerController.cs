@@ -10,6 +10,7 @@ using MacronizerApi.Models;
 using System.Text;
 using Macronizer.Filters;
 using Serilog;
+using Asp.Versioning;
 
 namespace MacronizerApi.Controllers;
 

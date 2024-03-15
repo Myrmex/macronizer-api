@@ -21,7 +21,7 @@ public static class Program
     {
         Console.WriteLine("ENVIRONMENT VARIABLES:");
         IDictionary dct = Environment.GetEnvironmentVariables();
-        List<string> keys = new();
+        List<string> keys = [];
         var enumerator = dct.GetEnumerator();
         while (enumerator.MoveNext())
         {

@@ -37,6 +37,8 @@ docker compose up
 
 Once done, open your browser at `localhost:5012/swagger/index.html` to get to the API [Swagger UI](https://swagger.io/tools/swagger-ui/). You can now call the service at the endpoint `localhost:5012/api/` + method name (see the Swagger UI). For instance, the macronizer endpoint will be found via a POST request at `http://localhost:5012/api/macronize`; see [below](#usage) about its usage.
 
+>To use this API in development, just run the Docker service for Alatius macronizer: `docker run -d -p 51234:105 --name macronizer vedph2020/macronizer:0.1.3`.
+
 ## Architecture
 
 The diagram below shows the layers in this architecture:
@@ -59,7 +61,7 @@ Should you need exclusive access to the service, it is recommended to run it on 
 
 Additionally, this solution also provides a minimalist CLI tool application, used to stress-test the API and verify its rate limit functionality.
 
-⚙️ Quick **Docker** image build: `docker build . -t vedph2020/macronizer-api:0.0.3 -t vedph2020/macronizer-api:latest` (replace with the current version).
+⚙️ Quick **Docker** image build: `docker build . -t vedph2020/macronizer-api:1.0.0 -t vedph2020/macronizer-api:latest` (replace with the current version).
 
 ## Usage
 
@@ -297,7 +299,7 @@ services:
     restart: unless-stopped
     ports:
       # https://stackoverflow.com/questions/48669548/why-does-aspnet-core-start-on-port-80-from-within-docker
-      - 5012:80
+      - 5012:8080
     depends_on:
       - macronizer
     environment:

@@ -16,13 +16,12 @@ using System.IO;
 using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.Http;
 using System.Threading.RateLimiting;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using Asp.Versioning;
 
 namespace MacronizerApi;
 
@@ -120,7 +119,7 @@ public sealed class Startup
         // build message
         MessagingOptions msgOptions = new();
         Configuration.GetSection("Messaging").Bind(msgOptions);
-        IMessageBuilderService messageBuilder = new FileMessageBuilderService(
+        FileMessageBuilderService messageBuilder = new(
             msgOptions,
             HostEnvironment);
 
@@ -138,7 +137,7 @@ public sealed class Startup
         // send message to all the recipients
         DotNetMailerOptions mailerOptions = new();
         Configuration.GetSection("Mailer").Bind(mailerOptions);
-        IMailerService mailer = new DotNetMailerService(mailerOptions);
+        DotNetMailerService mailer = new(mailerOptions);
 
         foreach (string recipient in recipients)
         {
@@ -172,7 +171,10 @@ public sealed class Startup
             if (!TimeSpan.TryParse(windowText, out window))
                 window = TimeSpan.FromMinutes(1);
         }
-        else window = TimeSpan.FromMinutes(1);
+        else
+        {
+            window = TimeSpan.FromMinutes(1);
+        }
 
         Log.Information("Applying rate limiter: " +
             "limit={PermitLimit}, queue={QueueLimit}, window={Window}",
