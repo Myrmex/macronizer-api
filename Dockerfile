@@ -1,11 +1,11 @@
 # Stage 1: base
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 WORKDIR /app
-EXPOSE 80
+EXPOSE 8080
 EXPOSE 443
 
 # Stage 2: build
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 COPY ["MacronizerApi/MacronizerApi.csproj", "MacronizerApi/"]
 RUN dotnet restore "MacronizerApi/MacronizerApi.csproj" -s https://api.nuget.org/v3/index.json --verbosity n

@@ -16,6 +16,16 @@ This API wraps the [Alatius macronizer API service](https://github.com/Myrmex/al
 
 📆 [Changelog](CHANGELOG.md)
 
+🐋 Quick Docker image build:
+
+```sh
+docker buildx create --use
+
+docker buildx build . --platform linux/amd64,linux/arm64,windows/amd64 -t vedph2020/macronizer:2.0.0 -t vedph2020/macronizer:latest --push
+```
+
+(replace with the current version).
+
 ## Features
 
 - CORS-enabled, JSON-based API endpoint to macronize Latin texts using the Alatius macronizer engine (ASP.NET).
@@ -284,7 +294,6 @@ dotnet run CommandLineKey1= CommandLineKey2=value2
 💡 Remember that even when using an external network in your Docker compose stack, you can still refer to containers by their assigned name (specified with `container_name`). So, if for some reason you are using an external network, e.g. for a NGINX proxy, you can still refer to the container (here `http://macronizer:105`) like in this example:
 
 ```yml
-version: '3.7'
 services:
   macronizer:
     image: vedph2020/macronizer:0.1.3
@@ -294,7 +303,7 @@ services:
       - 51234:105
 
   macronizer-api:
-    image: vedph2020/macronizer-api:0.0.3
+    image: vedph2020/macronizer-api:2.0.0
     container_name: macronizer-api
     restart: unless-stopped
     ports:
@@ -303,6 +312,7 @@ services:
     depends_on:
       - macronizer
     environment:
+      - ASPNETCORE_URLS=http://+:8080
       - ALATIUSMACRONIZERURI=http://macronizer:105
       - MESSAGING__APIROOTURL=https://YOURDOMAIN/api/
       - MESSAGING__APPROOTURL=https://YOURDOMAIN/swagger/index.html
