@@ -1,7 +1,6 @@
 ﻿using System.Text.Json;
 using MessagingApi;
 using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 using System.Reflection;
 using Serilog;
@@ -22,6 +21,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using Asp.Versioning;
+using Microsoft.OpenApi;
 
 namespace MacronizerApi;
 

@@ -18,7 +18,7 @@ This API wraps the [Alatius macronizer API service](https://github.com/Myrmex/al
 
 ## Features
 
-- CORS-enabled, JSON-based API endpoint to macronize Latin texts using the Alatius macronizer engine (ASP.NET 7).
+- CORS-enabled, JSON-based API endpoint to macronize Latin texts using the Alatius macronizer engine (ASP.NET).
 - OpenAPI [Swagger-based UI](https://swagger.io/tools/swagger-ui).
 - auditing features like logging and optional mailing to administrators.
 - rate limiting policy to better prevent issues and DoS attacks. This is especially required here because of the low performance due to the Python-based core.
