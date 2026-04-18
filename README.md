@@ -43,8 +43,6 @@ To play with the API on your machine (Windows / MacOS / Linux), assuming that yo
 docker compose up
 ```
 
->If you still have V1 of Docker compose, use command `docker-compose` (mind the dash!) instead.
-
 Once done, open your browser at `localhost:5012/swagger/index.html` to get to the API [Swagger UI](https://swagger.io/tools/swagger-ui/). You can now call the service at the endpoint `localhost:5012/api/` + method name (see the Swagger UI). For instance, the macronizer endpoint will be found via a POST request at `http://localhost:5012/api/macronize`; see [below](#usage) about its usage.
 
 >To use this API in development, just run the Docker service for Alatius macronizer: `docker run -d -p 51234:105 --name macronizer vedph2020/macronizer:0.1.3`.
@@ -193,11 +191,11 @@ POST https://macronizer-api.fusi-soft.com/api/macronize
 "ambiguousEscapeOpen": "",
 "ambiguousEscapeClose": "¿",
 "unknownEscapeOpen": "",
-"unknownEscapeClose": "¡"    
+"unknownEscapeClose": "¡"
 }
 ```
 
->Please notice that the URI sampled here exists for demonstrative purposes only, and is not production-oriented. as it relies on a low-end VM on shared hardware resources.
+>Please notice that the URI sampled here exists for demonstrative purposes only, and is not production-oriented, as it relies on a low-end VM on shared hardware resources.
 
 ## Settings
 

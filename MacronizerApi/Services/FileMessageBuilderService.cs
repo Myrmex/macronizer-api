@@ -41,7 +41,7 @@ public sealed class FileMessageBuilderService : MessageBuilderServiceBase
     {
         // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/file-providers?view=aspnetcore-3.0
 
-        IFileProvider provider = new PhysicalFileProvider(_messageDir);
+        PhysicalFileProvider provider = new(_messageDir);
         IFileInfo info = provider.GetFileInfo(templateName + ".html");
         if (!info.Exists) return null;
 

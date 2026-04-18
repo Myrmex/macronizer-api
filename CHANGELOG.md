@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [2.0.0] - 2026-04-17
 
 - upgraded to .NET 10.
+- refactored API for more modern infrastructure and replaced Swagger with Scalar.
 
 ## [1.0.0] - 2024-03-15
 
