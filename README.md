@@ -21,7 +21,7 @@ This API wraps the [Alatius macronizer API service](https://github.com/Myrmex/al
 ```sh
 docker buildx create --use
 
-docker buildx build . --platform linux/amd64,linux/arm64,windows/amd64 -t vedph2020/macronizer:2.0.0 -t vedph2020/macronizer:latest --push
+docker buildx build . --platform linux/amd64,linux/arm64,windows/amd64 -t vedph2020/macronizer-api:2.0.0 -t vedph2020/macronizer-api:latest --push
 ```
 
 (replace with the current version).
