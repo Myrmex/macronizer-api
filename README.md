@@ -57,7 +57,7 @@ The diagram below shows the layers in this architecture:
 2. on top of it, a thin [Flask API](https://github.com/Myrmex/alatius-macronizer-api) provides macronizer functionality as a service.
 3. on top of the Flask API, the ASP.NET web API provides a more robust infrastructure, and some additional filtering services.
 
-Services 1-2 are packed in a Docker image (`vedph2020/macronizer:0.1.3` and above), while service 3 is packed in a different image (`vedph2020/macronizer-api:0.0.3` and above).
+Services 1-2 are packed in a Docker image (`vedph2020/macronizer:0.1.3` and above), while service 3 is packed in a different image (`vedph2020/macronizer-api`).
 
 The API is designed to provide base macronization services for moderate machine consumption, as this is just a wrapper around a Python-based core, whose performance is the weak link in the chain. So, it mainly targets occasional usages, and provides a number of mechanism to protect server resources from abuse:
 
@@ -68,8 +68,6 @@ The API is designed to provide base macronization services for moderate machine 
 Should you need exclusive access to the service, it is recommended to run it on your local machine, using the provided [Docker compose script](docker-compose.yml), or just drop the whole layer 1 and directly consume layer 0 by running a container from the macronizer image (unless you need the additional filtering services of layer 1, which anyway are trivial).
 
 Additionally, this solution also provides a minimalist CLI tool application, used to stress-test the API and verify its rate limit functionality.
-
-⚙️ Quick **Docker** image build: `docker build . -t vedph2020/macronizer-api:1.0.0 -t vedph2020/macronizer-api:latest` (replace with the current version).
 
 ## Usage
 
