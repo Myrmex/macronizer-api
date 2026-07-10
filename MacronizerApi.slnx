@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="CHANGELOG.md" />
+    <File Path="docker-compose.yml" />
+    <File Path="Dockerfile" />
+    <File Path="macronizer-api-stack.png" />
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="macron/macron.csproj" />
+  <Project Path="Macronizer.Filters.Test/Macronizer.Filters.Test.csproj" />
+  <Project Path="Macronizer.Filters/Macronizer.Filters.csproj" />
+  <Project Path="MacronizerApi/MacronizerApi.csproj" />
+</Solution>

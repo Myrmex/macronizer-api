@@ -43,7 +43,7 @@ public sealed class MacronizerController : Controller
     {
         _serviceUri = config.GetValue<string>("AlatiusMacronizerUri")
             ?? "http://localhost:51234/";
-        if (!_serviceUri.EndsWith("/")) _serviceUri += "/";
+        if (!_serviceUri.EndsWith('/')) _serviceUri += "/";
 
         int n = config.GetValue<int>("MacronizerTimeout");
         _timeout = n < 1 ? 3 : n;
@@ -67,12 +67,12 @@ public sealed class MacronizerController : Controller
         StringBuilder text = new(request.Text);
         if (request.NormalizeWS)
         {
-            ITextFilter filter = new WhitespaceTextFilter();
+            WhitespaceTextFilter filter = new();
             filter.Apply(text);
         }
         if (request.PrecomposeMN)
         {
-            ITextFilter filter = new MnComposerTextFilter();
+            MnComposerTextFilter filter = new();
             filter.Apply(text);
         }
         request.Text = text.ToString();
@@ -151,7 +151,7 @@ public sealed class MacronizerController : Controller
         // apply postprocessing filters if any
         if (request.HasPostFilters() && string.IsNullOrEmpty(result.Error))
         {
-            ITextFilter filter = new RankSpanTextFilter();
+            RankSpanTextFilter filter = new();
             StringBuilder text = new(result.Result);
             filter.Apply(text, new RankSpanTextFilterOptions
             {

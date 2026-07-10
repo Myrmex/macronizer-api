@@ -1,0 +1,137 @@
+2026-07-10 22:11:39.564 +02:00 [INF] User profile is available. Using 'C:\Users\dfusi\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-07-10 22:11:39.685 +02:00 [INF] Running API
+2026-07-10 22:11:39.914 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:23590/scalar/v1 - null null
+2026-07-10 22:11:40.126 +02:00 [INF] No cached response available for this request.
+2026-07-10 22:11:40.134 +02:00 [INF] Executing endpoint 'HTTP: GET /scalar/{documentName?}'
+2026-07-10 22:11:40.303 +02:00 [INF] Write content with HTTP Response ContentType of text/html
+2026-07-10 22:11:40.349 +02:00 [INF] Executed endpoint 'HTTP: GET /scalar/{documentName?}'
+2026-07-10 22:11:40.351 +02:00 [INF] The response could not be cached for this request.
+2026-07-10 22:11:40.360 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:23590/scalar/v1 - 200 null text/html 454.8843ms
+2026-07-10 22:11:40.380 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:23590/_framework/aspnetcore-browser-refresh.js - null null
+2026-07-10 22:11:40.380 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:23590/scalar/scalar.js - null null
+2026-07-10 22:11:40.380 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:23590/scalar/scalar.aspnetcore.js - null null
+2026-07-10 22:11:40.387 +02:00 [INF] No cached response available for this request.
+2026-07-10 22:11:40.425 +02:00 [INF] Executing endpoint 'HTTP: GET /scalar/scalar.js'
+2026-07-10 22:11:40.427 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:23590/_vs/browserLink - null null
+2026-07-10 22:11:40.428 +02:00 [INF] CORS policy execution failed.
+2026-07-10 22:11:40.429 +02:00 [INF] Request origin http://localhost:23590 does not have permission to access the resource.
+2026-07-10 22:11:40.429 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:23590/_framework/aspnetcore-browser-refresh.js - 200 14931 application/javascript; charset=utf-8 48.4919ms
+2026-07-10 22:11:40.432 +02:00 [INF] No cached response available for this request.
+2026-07-10 22:11:40.434 +02:00 [INF] Executing endpoint 'HTTP: GET /scalar/scalar.aspnetcore.js'
+2026-07-10 22:11:40.439 +02:00 [INF] Sending file with download name ''.
+2026-07-10 22:11:40.473 +02:00 [INF] Sending file with download name ''.
+2026-07-10 22:11:40.479 +02:00 [INF] Executed endpoint 'HTTP: GET /scalar/scalar.aspnetcore.js'
+2026-07-10 22:11:40.480 +02:00 [INF] The response could not be cached for this request.
+2026-07-10 22:11:40.483 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:23590/scalar/scalar.aspnetcore.js - 200 1111 text/javascript 103.4032ms
+2026-07-10 22:11:40.484 +02:00 [INF] Executed endpoint 'HTTP: GET /scalar/scalar.js'
+2026-07-10 22:11:40.486 +02:00 [INF] The response could not be cached for this request.
+2026-07-10 22:11:40.494 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:23590/scalar/scalar.js - 200 1071610 text/javascript 115.272ms
+2026-07-10 22:11:40.719 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:23590/_vs/browserLink - 200 null text/javascript; charset=UTF-8 294.1317ms
+2026-07-10 22:11:40.812 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:23590/openapi/v1.json - null null
+2026-07-10 22:11:40.816 +02:00 [INF] No cached response available for this request.
+2026-07-10 22:11:40.817 +02:00 [INF] Executing endpoint 'HTTP: GET /openapi/{documentName}.json'
+2026-07-10 22:11:40.832 +02:00 [INF] Executed endpoint 'HTTP: GET /openapi/{documentName}.json'
+2026-07-10 22:11:40.834 +02:00 [INF] The response could not be cached for this request.
+2026-07-10 22:11:40.838 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:23590/openapi/v1.json - 200 null application/json;charset=utf-8 26.5558ms
+2026-07-10 22:11:41.406 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:23590/scalar/favicon.svg - null null
+2026-07-10 22:11:41.408 +02:00 [INF] No cached response available for this request.
+2026-07-10 22:11:41.410 +02:00 [INF] Executing endpoint 'HTTP: GET /scalar/favicon.svg'
+2026-07-10 22:11:41.412 +02:00 [INF] Sending file with download name ''.
+2026-07-10 22:11:41.414 +02:00 [INF] Executed endpoint 'HTTP: GET /scalar/favicon.svg'
+2026-07-10 22:11:41.415 +02:00 [INF] The response could not be cached for this request.
+2026-07-10 22:11:41.417 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:23590/scalar/favicon.svg - 200 533 image/svg+xml 10.6724ms
+2026-07-10 22:12:31.703 +02:00 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:23590/api/macronize - null null
+2026-07-10 22:12:31.708 +02:00 [INF] CORS policy execution successful.
+2026-07-10 22:12:31.710 +02:00 [INF] Request finished HTTP/1.1 OPTIONS http://localhost:23590/api/macronize - 204 null null 7.6651ms
+2026-07-10 22:12:31.712 +02:00 [INF] Request starting HTTP/1.1 POST http://localhost:23590/api/macronize - application/json 90
+2026-07-10 22:12:31.714 +02:00 [INF] CORS policy execution successful.
+2026-07-10 22:12:31.716 +02:00 [INF] Executing endpoint 'MacronizerApi.Controllers.MacronizerController.Macronize (MacronizerApi)'
+2026-07-10 22:12:31.746 +02:00 [INF] Route matched with {action = "Macronize", controller = "Macronizer"}. Executing controller action with signature System.Threading.Tasks.Task`1[MacronizerApi.Models.MacronizerResponse] Macronize(MacronizerApi.Models.MacronizerRequest) on controller MacronizerApi.Controllers.MacronizerController (MacronizerApi).
+2026-07-10 22:12:31.789 +02:00 [INF] Macronization request: txt: 39 | opt:- at "2026-07-10T20:12:31.7885560Z" UTC from ::1
+2026-07-10 22:12:36.213 +02:00 [INF] Executed action MacronizerApi.Controllers.MacronizerController.Macronize (MacronizerApi) in 4461.0972ms
+2026-07-10 22:12:36.251 +02:00 [INF] Executed endpoint 'MacronizerApi.Controllers.MacronizerController.Macronize (MacronizerApi)'
+2026-07-10 22:12:36.351 +02:00 [ERR] An unhandled exception has occurred while executing the request.
+System.Net.Http.HttpRequestException: No connection could be made because the target machine actively refused it. (localhost:51234)
+ ---> System.Net.Sockets.SocketException (10061): No connection could be made because the target machine actively refused it.
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.ThrowException(SocketError error, CancellationToken cancellationToken)
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.System.Threading.Tasks.Sources.IValueTaskSource.GetResult(Int16 token)
+   at System.Net.Http.HttpConnectionPool.ConnectToTcpHostAsync(String host, Int32 port, HttpRequestMessage initialRequest, Boolean async, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at System.Net.Http.HttpConnectionPool.ConnectToTcpHostAsync(String host, Int32 port, HttpRequestMessage initialRequest, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionPool.ConnectAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionPool.CreateHttp11ConnectionAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionPool.InjectNewHttp11ConnectionAsync(QueueItem queueItem)
+   at System.Threading.Tasks.TaskCompletionSourceWithCancellation`1.WaitWithCancellationAsync(CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionWaiter`1.WaitForConnectionWithTelemetryAsync(HttpRequestMessage request, HttpConnectionPool pool, Boolean async, CancellationToken requestCancellationToken)
+   at System.Net.Http.HttpConnectionPool.SendWithVersionDetectionAndRetryAsync(HttpRequestMessage request, Boolean async, Boolean doRequestAuth, CancellationToken cancellationToken)
+   at System.Net.Http.DiagnosticsHandler.SendAsyncCore(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.RedirectHandler.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.SocketsHttpHandler.<SendAsync>g__CreateHandlerAndSendAsync|115_0(HttpRequestMessage request, CancellationToken cancellationToken)
+   at System.Net.Http.HttpClient.<SendAsync>g__Core|83_0(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationTokenSource cts, Boolean disposeCts, CancellationTokenSource pendingRequestsCts, CancellationToken originalCancellationToken)
+   at MacronizerApi.Controllers.MacronizerController.Macronize(MacronizerRequest request) in D:\Projects\Cursus\MacronizerApi\MacronizerApi\Controllers\MacronizerController.cs:line 125
+   at lambda_method5(Closure, Object)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.AwaitableObjectResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeInnerFilterAsync>g__Awaited|13_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|25_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|7_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at Microsoft.AspNetCore.ResponseCaching.ResponseCachingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2026-07-10 22:12:36.376 +02:00 [INF] Request finished HTTP/1.1 POST http://localhost:23590/api/macronize - 500 null text/plain; charset=utf-8 4663.5565ms
+2026-07-10 22:15:47.853 +02:00 [INF] User profile is available. Using 'C:\Users\dfusi\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-07-10 22:15:47.988 +02:00 [INF] Running API
+2026-07-10 22:15:48.218 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:23590/scalar/v1 - null null
+2026-07-10 22:15:48.415 +02:00 [INF] No cached response available for this request.
+2026-07-10 22:15:48.424 +02:00 [INF] Executing endpoint 'HTTP: GET /scalar/{documentName?}'
+2026-07-10 22:15:48.603 +02:00 [INF] Write content with HTTP Response ContentType of text/html
+2026-07-10 22:15:48.652 +02:00 [INF] Executed endpoint 'HTTP: GET /scalar/{documentName?}'
+2026-07-10 22:15:48.654 +02:00 [INF] The response could not be cached for this request.
+2026-07-10 22:15:48.663 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:23590/scalar/v1 - 200 null text/html 456.4716ms
+2026-07-10 22:15:48.697 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:23590/scalar/scalar.js - null null
+2026-07-10 22:15:48.697 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:23590/scalar/scalar.aspnetcore.js - null null
+2026-07-10 22:15:48.704 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:23590/_framework/aspnetcore-browser-refresh.js - null null
+2026-07-10 22:15:48.706 +02:00 [INF] No cached response available for this request.
+2026-07-10 22:15:48.708 +02:00 [INF] Executing endpoint 'HTTP: GET /scalar/scalar.js'
+2026-07-10 22:15:48.710 +02:00 [INF] CORS policy execution failed.
+2026-07-10 22:15:48.712 +02:00 [INF] Request origin http://localhost:23590 does not have permission to access the resource.
+2026-07-10 22:15:48.714 +02:00 [INF] No cached response available for this request.
+2026-07-10 22:15:48.716 +02:00 [INF] Executing endpoint 'HTTP: GET /scalar/scalar.aspnetcore.js'
+2026-07-10 22:15:48.719 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:23590/_framework/aspnetcore-browser-refresh.js - 200 14931 application/javascript; charset=utf-8 14.7429ms
+2026-07-10 22:15:48.723 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:23590/_vs/browserLink - null null
+2026-07-10 22:15:48.728 +02:00 [INF] Sending file with download name ''.
+2026-07-10 22:15:48.758 +02:00 [INF] Sending file with download name ''.
+2026-07-10 22:15:48.761 +02:00 [INF] Executed endpoint 'HTTP: GET /scalar/scalar.aspnetcore.js'
+2026-07-10 22:15:48.761 +02:00 [INF] Executed endpoint 'HTTP: GET /scalar/scalar.js'
+2026-07-10 22:15:48.764 +02:00 [INF] The response could not be cached for this request.
+2026-07-10 22:15:48.764 +02:00 [INF] The response could not be cached for this request.
+2026-07-10 22:15:48.768 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:23590/scalar/scalar.js - 304 null null 71.9164ms
+2026-07-10 22:15:48.768 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:23590/scalar/scalar.aspnetcore.js - 304 null null 71.2407ms
+2026-07-10 22:15:48.810 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:23590/_vs/browserLink - 200 null text/javascript; charset=UTF-8 87.2747ms
+2026-07-10 22:15:49.304 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:23590/openapi/v1.json - null null
+2026-07-10 22:15:49.308 +02:00 [INF] No cached response available for this request.
+2026-07-10 22:15:49.310 +02:00 [INF] Executing endpoint 'HTTP: GET /openapi/{documentName}.json'
+2026-07-10 22:15:49.328 +02:00 [INF] Executed endpoint 'HTTP: GET /openapi/{documentName}.json'
+2026-07-10 22:15:49.330 +02:00 [INF] The response could not be cached for this request.
+2026-07-10 22:15:49.334 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:23590/openapi/v1.json - 200 null application/json;charset=utf-8 29.8774ms
+2026-07-10 22:16:08.201 +02:00 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:23590/api/macronize - null null
+2026-07-10 22:16:08.204 +02:00 [INF] CORS policy execution successful.
+2026-07-10 22:16:08.207 +02:00 [INF] Request finished HTTP/1.1 OPTIONS http://localhost:23590/api/macronize - 204 null null 6.4295ms
+2026-07-10 22:16:08.209 +02:00 [INF] Request starting HTTP/1.1 POST http://localhost:23590/api/macronize - application/json 90
+2026-07-10 22:16:08.211 +02:00 [INF] CORS policy execution successful.
+2026-07-10 22:16:08.213 +02:00 [INF] Executing endpoint 'MacronizerApi.Controllers.MacronizerController.Macronize (MacronizerApi)'
+2026-07-10 22:16:08.239 +02:00 [INF] Route matched with {action = "Macronize", controller = "Macronizer"}. Executing controller action with signature System.Threading.Tasks.Task`1[MacronizerApi.Models.MacronizerResponse] Macronize(MacronizerApi.Models.MacronizerRequest) on controller MacronizerApi.Controllers.MacronizerController (MacronizerApi).
+2026-07-10 22:16:08.277 +02:00 [INF] Macronization request: txt: 39 | opt:- at "2026-07-10T20:16:08.2766465Z" UTC from ::1
+2026-07-10 22:16:17.446 +02:00 [INF] Executing ObjectResult, writing value of type 'MacronizerApi.Models.MacronizerResponse'.
+2026-07-10 22:16:17.454 +02:00 [INF] Executed action MacronizerApi.Controllers.MacronizerController.Macronize (MacronizerApi) in 9210.3366ms
+2026-07-10 22:16:17.455 +02:00 [INF] Executed endpoint 'MacronizerApi.Controllers.MacronizerController.Macronize (MacronizerApi)'
+2026-07-10 22:16:17.457 +02:00 [INF] Request finished HTTP/1.1 POST http://localhost:23590/api/macronize - 200 null application/json; charset=utf-8 9248.0803ms
