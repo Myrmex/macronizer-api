@@ -16,15 +16,20 @@ This API wraps the [Alatius macronizer API service](https://github.com/Myrmex/al
 
 📆 [Changelog](CHANGELOG.md)
 
-🐋 Quick Docker image build:
+🐋 Before creating Docker images, ensure you have a buildx builder instance running that supports multi-arch:
 
 ```sh
-docker buildx create --use
-
-docker buildx build . --platform linux/amd64,linux/arm64,windows/amd64 -t vedph2020/macronizer-api:2.0.0 -t vedph2020/macronizer-api:latest --push
+docker buildx create --use --name multi-arch-builder || docker buildx use multi-arch-builder
+docker buildx inspect --bootstrap
 ```
 
-(replace with the current version).
+>To run natively on Linux VMs, macOS (both Intel and Apple Silicon), and Windows (via WSL2 or Docker Desktop)—`linux/amd64` and `linux/arm64` are the only two targets we need. Note that `docker buildx` automatically injects variables like `TARGETARCH` and `TARGETOS` into the scope of your build. In `Dockerfile` we pass these directly to the .NET CLI commands.
+
+These commands build for multiple platforms and push directly to Docker Hub:
+
+```sh
+docker buildx build --platform linux/amd64,linux/arm64 -t vedph2020/macronizer-api:2.0.1 -t vedph2020/macronizer-api:latest --push .
+```
 
 ## Features
 
